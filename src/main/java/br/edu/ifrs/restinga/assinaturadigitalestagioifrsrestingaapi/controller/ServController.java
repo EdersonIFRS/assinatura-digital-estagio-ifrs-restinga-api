@@ -64,28 +64,28 @@ public class ServController {
 	   //Buscar Servidor por id
 	   @GetMapping("/buscar/{id}")
 	    public Servidor buscar(@PathVariable Long id) {
-	        return servInt.buscar(id);
+		return servInt.buscar(id);
 	    }
 		  
 	   
 	   
-	   //Atualizar Servidor
-	   
-	
-		@PutMapping("/atualizar/{id}")
-		public Servidor atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
-		    Servidor servidorExistente = servInt.buscar(id);
-		    BeanUtils.copyProperties(servidor, servidorExistente, "id");
-		    return servInt.salvar(servidorExistente);
-		}
+	 
+	//Atualizar Servidor   
+
+	@PutMapping("/atualizar/{id}")
+	public Servidor atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
+	    Servidor servidorExistente = servInt.buscar(id);
+	    BeanUtils.copyProperties(servidor, servidorExistente, "id");
+	    return servInt.salvar(servidorExistente);
+	}
 		
 		
-		//  DELETE para remover servidor
-		@DeleteMapping("/del/{id}")
-		public void remover(@PathVariable Long id) {
-		    Servidor servidorExistente = servInt.buscar(id);
-		    servInt.remover(servidorExistente);
-		}
+	//  DELETE para remover servidor
+	@DeleteMapping("/del/{id}")
+	public void remover(@PathVariable Long id) {
+	    Servidor servidorExistente = servInt.buscar(id);
+	    servInt.remover(servidorExistente);
+	}
 		   
 		  
 
