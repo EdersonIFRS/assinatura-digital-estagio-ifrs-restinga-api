@@ -1,0 +1,57 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Adicionar Servidor</title>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+	<form id="form-servidor" method="POST" action="http://localhost:8089/post">
+
+		<label for="nome">Nome:</label>
+		<input type="text" id="nome" name="nome"><br><br>
+
+		<label for="cargo">Cargo:</label>
+		<input type="text" id="cargo" name="cargo"><br><br>
+
+		<label for="curso">Curso:</label>
+		<input type="text" id="curso" name="curso"><br><br>
+
+		<label for="senha">Senha:</label>
+		<input type="password" id="senha" name="senha"><br><br>
+		
+		<button type="submit">Enviar</button>
+	</form>
+	
+	<script>
+		$(document).ready(function() {
+			$('#form-servidor').submit(function(e) {
+				e.preventDefault();
+				var nome = $('#nome').val();
+				var cargo = $('#cargo').val();
+				var curso = $('#curso').val();
+				var senha = $('#senha').val();
+				var data = { "nome": nome, "cargo": cargo, "curso": curso, "senha": senha };
+				$.ajax({
+					type: "POST",
+					url: "http://localhost:8089/post",
+					data: JSON.stringify(data),
+					contentType: "application/json",
+					success: function(data) {
+						console.log(data);
+						alert('Servidor adicionado com sucesso!');
+					},
+					error: function(jqXHR, textStatus, errorThrown) {
+						console.error(jqXHR);
+						console.error(textStatus);
+						console.error(errorThrown);
+						alert('Erro ao adicionar servidor');
+					}
+				});
+			});
+		});
+	</script>
+</body>
+</html>
