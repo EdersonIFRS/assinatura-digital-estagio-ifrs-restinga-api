@@ -38,49 +38,48 @@ public class ServController {
 	/*
 	@RequestMapping("/alo")
 	@ResponseBody	 
-	   public String serv1() {
-			
-			return servInt.buscar(1l).getNome();
-			
-		}*/
-	
-	
+	public String serv1() {
+
+		return servInt.buscar(1l).getNome();
+
+	}*/
+
+
 	//Método POST para receber dados para cadastro do servidor
 
-	   @PostMapping("/post")
-	   @ResponseStatus(HttpStatus.CREATED)
-	    public Servidor salvar(@RequestBody Servidor servidor) {
-	        return servInt.salvar(servidor);
-	    }
+	@PostMapping("/post")
+	@ResponseStatus(HttpStatus.CREATED)
+	public Servidor salvar(@RequestBody Servidor servidor) {
+	return servInt.salvar(servidor);
+	}
 	   
 	   
 	//GET	   
 
-	   //Buscar Servidor por id
-	   @GetMapping("/buscar/{id}")
-	    public Servidor buscar(@PathVariable Long id) {
-	        return servInt.buscar(id);
-	    }
+	//Buscar Servidor por id
+	@GetMapping("/buscar/{id}")
+	public Servidor buscar(@PathVariable Long id) {
+	return servInt.buscar(id);
+	}
 		  
 	   
 	   
-	   //Atualizar Servidor
-	   
-	
-		@PutMapping("/atualizar/{id}")
-		public Servidor atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
-		    Servidor servidorExistente = servInt.buscar(id);
-		    BeanUtils.copyProperties(servidor, servidorExistente, "id");
-		    return servInt.salvar(servidorExistente);
-		}
+	//Atualizar Servidor
+
+	@PutMapping("/atualizar/{id}")
+	public Servidor atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
+	    Servidor servidorExistente = servInt.buscar(id);
+	    BeanUtils.copyProperties(servidor, servidorExistente, "id");
+	    return servInt.salvar(servidorExistente);
+	}
+
 		
-		
-		//  DELETE para remover servidor
-		@DeleteMapping("/del/{id}")
-		public void remover(@PathVariable Long id) {
-		    Servidor servidorExistente = servInt.buscar(id);
-		    servInt.remover(servidorExistente);
-		}
+	//  DELETE para remover servidor por id
+	@DeleteMapping("/del/{id}")
+	public void remover(@PathVariable Long id) {
+	    Servidor servidorExistente = servInt.buscar(id);
+	    servInt.remover(servidorExistente);
+	}
 		   
 		  
 
