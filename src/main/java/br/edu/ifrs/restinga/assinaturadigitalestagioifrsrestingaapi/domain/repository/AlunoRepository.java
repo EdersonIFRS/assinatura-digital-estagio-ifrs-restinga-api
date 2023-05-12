@@ -1,4 +1,4 @@
-package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.repository;
+package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository;
 
 
 import org.springframework.data.jpa.repository.JpaRepository;
