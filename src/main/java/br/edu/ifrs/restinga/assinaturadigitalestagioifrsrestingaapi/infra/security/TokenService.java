@@ -24,7 +24,7 @@ public class TokenService {
             Algorithm algoritimo = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("API ASSINATURA.EST.IFRS")
-                    .withSubject(usuario.getLogin())
+                    .withSubject(usuario.getEmail())
                     .withExpiresAt(dataExpiracao())
                     .sign(algoritimo);
         } catch (JWTCreationException exception){

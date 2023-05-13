@@ -1,14 +1,15 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto;
 
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
+
 public record DadosCadastroAluno(
 
     String nomeCompleto,
-    String email,
+    Usuario usuarioSistema,
     String turno,
     String matricula,
     String ingresso,
-    String curso,
-    String senha
+    String curso
 
 ) {
     

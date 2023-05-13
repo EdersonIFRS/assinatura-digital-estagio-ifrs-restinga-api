@@ -2,10 +2,7 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtualizacaoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroAluno;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,23 +17,27 @@ public class Aluno {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nomeCompleto;
-    private String email;
+
+    @OneToOne
+    @JoinColumn(name = "usuario_sistema_id")
+    private Usuario usuarioSistema;
+
     private String turno;
     private String matricula;
     private String ingresso;
     private String curso;
-    private String senha;
+
     private boolean ativo;
 
     public Aluno(DadosCadastroAluno dados) {
         this.ativo = true;
         this.nomeCompleto = dados.nomeCompleto();
-        this.email = dados.email();
+        this.usuarioSistema=dados.usuarioSistema();
         this.turno = dados.turno();
         this.matricula = dados.matricula();
         this.ingresso = dados.ingresso();
         this.curso = dados.curso();
-        this.senha = dados.senha();
+
     }    
 
     public void atualizarInformacoes(@Valid DadosAtualizacaoAluno dados) {
@@ -44,8 +45,8 @@ public class Aluno {
             this.nomeCompleto = dados.nomeCompleto();
         }
 
-        if(dados.email() != null){
-            this.email = dados.email();
+        if(dados.usuarioSistema() != null){
+            this.usuarioSistema = dados.usuarioSistema();
         }
 
         if(dados.turno() != null){
@@ -64,9 +65,7 @@ public class Aluno {
             this.curso = dados.curso();
         }
 
-        if(dados.senha() != null){
-            this.senha = dados.senha();
-        }
+
     }
 
     public void desativar() {
