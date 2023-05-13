@@ -47,10 +47,11 @@ public class ServController {
 
 	//Método POST para receber dados para cadastro do servidor
 
-	@PostMapping("/post")
+	@PostMapping("/servidor/cadastroServidor")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Servidor salvar(@RequestBody Servidor servidor) {
-	return servInt.salvar(servidor);
+	public ResponseEntity salvar(@RequestBody Servidor servidor) {	
+		servInt.salvar(servidor);
+		return ResponseEntity.noContent().build();
 	}
 	   
 	   
@@ -58,8 +59,17 @@ public class ServController {
 
 	//Buscar Servidor por id
 	@GetMapping("/buscar/{id}")
-	public Servidor buscar(@PathVariable Long id) {
-	return servInt.buscar(id);
+	public ResponseEntity buscar(@PathVariable Long id) {	
+		
+		servInt.buscar(id);
+		return ResponseEntity.ok(servInt.buscar(id));
+		
+	}
+	
+	@GetMapping("/listarServidores")	
+	public ResponseEntity listar(){
+				
+		return ResponseEntity.ok(ServInt.listar());
 	}
 		  
 	   
@@ -67,18 +77,22 @@ public class ServController {
 	//Atualizar Servidor
 
 	@PutMapping("/atualizar/{id}")
-	public Servidor atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
+	public ResponseEntity atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
 	    Servidor servidorExistente = servInt.buscar(id);
 	    BeanUtils.copyProperties(servidor, servidorExistente, "id");
-	    return servInt.salvar(servidorExistente);
+	    servInt.salvar(servidorExistente);
+		
+		return ResponseEntity.noContent().build();
 	}
 
 		
 	//  DELETE para remover servidor por id
 	@DeleteMapping("/del/{id}")
-	public void remover(@PathVariable Long id) {
+	public ResponseEntity remover(@PathVariable Long id) {
 	    Servidor servidorExistente = servInt.buscar(id);
 	    servInt.remover(servidorExistente);
+		
+		return ResponseEntity.noContent().build();
 	}
 		   
 		  
