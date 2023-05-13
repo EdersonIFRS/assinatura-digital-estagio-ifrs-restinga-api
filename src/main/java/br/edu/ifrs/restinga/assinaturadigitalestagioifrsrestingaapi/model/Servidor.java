@@ -23,7 +23,13 @@ public class Servidor {
 	
 	@Id 
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+   	private Long id;
+	
+	
+	@OneToOne
+	@JoinColumn(name = "usuario_sistema_id")
+	private Usuario usuarioSistema;
+
 	
 
 	public String getNome() {
