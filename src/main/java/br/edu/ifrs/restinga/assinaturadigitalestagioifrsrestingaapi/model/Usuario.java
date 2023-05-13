@@ -78,4 +78,10 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public void atualizarInformacoes(Usuario usuarioSistema) {
+        if(usuarioSistema.senha != null){
+            this.senha = usuarioSistema.senha;
+        }
+    }
 }

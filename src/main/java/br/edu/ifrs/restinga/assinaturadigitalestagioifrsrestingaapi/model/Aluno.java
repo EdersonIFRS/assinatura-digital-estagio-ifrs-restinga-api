@@ -32,7 +32,7 @@ public class Aluno {
     public Aluno(DadosCadastroAluno dados) {
         this.ativo = true;
         this.nomeCompleto = dados.nomeCompleto();
-        this.usuarioSistema=dados.usuarioSistema();
+        this.usuarioSistema = dados.usuarioSistema();
         this.turno = dados.turno();
         this.matricula = dados.matricula();
         this.ingresso = dados.ingresso();
@@ -46,7 +46,7 @@ public class Aluno {
         }
 
         if(dados.usuarioSistema() != null){
-            this.usuarioSistema = dados.usuarioSistema();
+            this.usuarioSistema.atualizarInformacoes(dados.usuarioSistema());
         }
 
         if(dados.turno() != null){
@@ -64,7 +64,6 @@ public class Aluno {
         if(dados.curso() != null){
             this.curso = dados.curso();
         }
-
 
     }
 

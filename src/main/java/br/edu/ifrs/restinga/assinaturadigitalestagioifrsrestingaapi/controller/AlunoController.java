@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -23,6 +24,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCad
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosDetalhamentoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.EmailValidator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
@@ -41,12 +43,20 @@ public class AlunoController {
     @Autowired
     private TokenService tokenService;
 
+    @Autowired
+    private EmailValidator emailValidator;
+
     @PostMapping("/cadastrarAluno")
     @Transactional
     public ResponseEntity cadastrarAluno(@RequestBody @Valid DadosCadastroAluno dados, UriComponentsBuilder uriBuilder){
         var aluno = new Aluno(dados);
+        
 
         if(usuarioRepository.findByEmail(dados.usuarioSistema().getEmail())!= null){
+            return ResponseEntity.noContent().build();
+        }
+
+        if (!emailValidator.validateEmail(aluno.getUsuarioSistema().getEmail())) {
             return ResponseEntity.noContent().build();
         }
 
@@ -74,14 +84,16 @@ public class AlunoController {
 
     @PutMapping("/atualizarAluno")
     @Transactional
-    public ResponseEntity atualizarAluno(@RequestBody @Valid DadosAtualizacaoAluno dadosAluno){
-
+    public ResponseEntity atualizarAluno(@RequestBody @Valid DadosAtualizacaoAluno dadosAluno, @RequestHeader ("Authorization") String token){
+        
+        var email = tokenService.getSubject(token.replace("Bearer ", ""));
 
         var aluno = alunoRepository.getReferenceById(dadosAluno.id());
-//        var tokenJWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBUEkgQVNTSU5BVFVSQS5FU1QuSUZSUyIsInN1YiI6Ik1heWNvbiIsImV4cCI6MTY4Mzk1MTQ3NH0.b2gUIdazmg4BofbKQTAqOJSgnSe-QxMjXDwvbWjvi88";
-//        if(!aluno.getUsuarioSistema().getEmail().equals(tokenService.getSubject(tokenJWT))){
-//            return ResponseEntity.noContent().build();
-//        }
+       
+        if(!aluno.getUsuarioSistema().getEmail().equals(email)){
+            return ResponseEntity.noContent().build();
+        }
+
         aluno.atualizarInformacoes(dadosAluno);
         return ResponseEntity.ok(new DadosDetalhamentoAluno(aluno)); //devolve um DTO
     }
