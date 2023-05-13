@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.repository.ServidorInterf;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.UsuarioRepository;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 
 @Controller
 @RestController
