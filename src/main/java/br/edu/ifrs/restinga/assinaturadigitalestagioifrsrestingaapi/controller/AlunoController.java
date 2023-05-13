@@ -3,9 +3,11 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 import java.util.List;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.UsuarioRepository;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -53,11 +55,11 @@ public class AlunoController {
         
 
         if(usuarioRepository.findByEmail(dados.usuarioSistema().getEmail())!= null){
-            return ResponseEntity.noContent().build();
+            return TratadorDeErros.tratarErro409();
         }
 
-        if (!emailValidator.validateEmail(aluno.getUsuarioSistema().getEmail())) {
-            return ResponseEntity.noContent().build();
+        if (!emailValidator.validaEmail(aluno.getUsuarioSistema().getEmail())) {
+            return TratadorDeErros.tratarErro400(HttpStatus.BAD_REQUEST);
         }
 
         var usuarioSistema = new Usuario(

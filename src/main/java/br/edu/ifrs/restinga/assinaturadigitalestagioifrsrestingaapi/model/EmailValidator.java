@@ -10,7 +10,7 @@ public class EmailValidator {
     private static final String RESTINGA_DOMAIN_PATTERN = "@restinga.ifrs.edu.br$";
     private static final Pattern pattern = Pattern.compile(RESTINGA_DOMAIN_PATTERN);
 
-    public boolean validateEmail(String email) {
+    public boolean validaEmail(String email) {
         Matcher matcher = pattern.matcher(email);
         return matcher.find();
     }

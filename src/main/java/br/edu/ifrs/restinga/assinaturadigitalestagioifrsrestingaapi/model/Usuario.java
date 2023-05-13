@@ -2,6 +2,7 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,7 +25,9 @@ public class Usuario implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
     private String email;
+    @NotBlank
     private String senha;
 
     public Usuario(String email, String senha) {
