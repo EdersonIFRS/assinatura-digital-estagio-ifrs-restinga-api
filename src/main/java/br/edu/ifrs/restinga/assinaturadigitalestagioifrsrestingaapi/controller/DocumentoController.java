@@ -1,76 +1,91 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.file.SalvarDocumento;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.DocumentoRepository;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URLConnection;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class DocumentoController {
-
-    SalvarDocumento salvarDocumento = new SalvarDocumento();
-
-    @PostMapping("/salvar")
+    @Autowired
+    DocumentoRepository documentoRepository;
+    @PostMapping("/salvarDocumento")
     @ResponseBody
-    public String salvarDocumentos(@RequestBody List<MultipartFile> documentos) {
-        //simular id de chamado
-        int chamado = (int) (Math.random() * 10000);
+    public ResponseEntity salvarDocumentos(@RequestBody List<MultipartFile> documentos) {
+        Documento doc = new Documento();
         for (MultipartFile documento : documentos) {
             try {
-                salvarDocumento.salvar(documento,chamado);
-            } catch (IOException e) {
-                return "Erro ao salvar documentos: "   + e.getMessage();
+                byte[] bytesDocumento = documento.getBytes();
+                Blob blobDoc = new SerialBlob(bytesDocumento);
+                doc.setNome(documento.getOriginalFilename());
+                doc.setDocumento(blobDoc);
+                documentoRepository.save(doc);
+            } catch (IOException | SQLException e) {
+                return ResponseEntity.badRequest().build();
             }
         }
-        return "Documentos salvos diretorio " + chamado;
+        return ResponseEntity.ok().build();
     }
-
-    //faz download de um unico arquivo, precisa do nome do arquivo e o chamadoId (pasta), que no teste está 320...
-    @GetMapping("/download")
-    public ResponseEntity<Resource> downloadArquivo(@RequestParam(name = "nomeArquivo") String nomeArquivo, @RequestParam int chamadoId) {
-        Path diretorioDestino = Paths.get("./documentos/chamados/" + chamadoId +"/" + nomeArquivo);
+    @GetMapping("/downloadDocumento")
+    public ResponseEntity<Resource> downloadArquivo(@RequestParam long chamadoId) {
+        Optional<Documento> doc;
         try {
-            Resource resource = new UrlResource(diretorioDestino.toUri());
-            if (!resource.exists()) {
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            doc  = documentoRepository.findById(chamadoId);
+            if(!doc.isPresent()){
+                return new ResponseEntity(HttpStatus.NOT_FOUND);
             }
-            String contentType = URLConnection.guessContentTypeFromName(resource.getFilename());
+            byte[] documentoBytes = doc.get().getDocumento().getBytes(1, (int) doc.get().getDocumento().length());
+            InputStream inputStream = new ByteArrayInputStream(documentoBytes);
+            Resource resource = new InputStreamResource(inputStream);
+
             return ResponseEntity.ok()
-                    .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                    .contentType(MediaType.APPLICATION_PDF)
                     .body(resource);
-        } catch (IOException e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (SQLException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
-
-    @GetMapping("/deletar")
-    public String deletarDocumento(@RequestParam String chamadoId){
-       return salvarDocumento.deletar(Integer.parseInt(chamadoId));
+    @GetMapping("/deletarDocumento")
+    public ResponseEntity<String> deletarDocumento(@RequestParam Long chamadoId){
+        Optional<Documento> doc = documentoRepository.findById(chamadoId);
+        if(doc.isPresent()){
+            documentoRepository.deleteById(chamadoId);
+            return ResponseEntity.ok().build();
+        }
+        else{
+            return ResponseEntity.notFound().build();
+        }
     }
-
-    @GetMapping("/listar")
+    @GetMapping("/listarDocumento")
     @ResponseBody
-    public String listarDocumentos(@RequestParam String chamadoId){
-        List<String> lista = salvarDocumento.listarDocumentos(chamadoId);
-        String nomes = "";
-        for (String nome : lista){
-            nomes += "\n " + nome.toString();
+    public ResponseEntity<String> listarDocumentos(@RequestParam Long chamadoId){
+        Optional<Documento> doc = documentoRepository.findById(chamadoId);
+        if(doc.isPresent()){
+                String nome = doc.get().getNome();
+                return ResponseEntity.ok()
+                        .contentLength(nome.length())
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .body(nome);
+
         }
-        return nomes;
+        else{
+            return ResponseEntity.notFound().build();
+        }
+
     }
-
-
 }
