@@ -2,7 +2,7 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model;
 
 
 
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroAluno;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoUpdateServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroServidor;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -35,6 +35,26 @@ public class Servidor {
 		this.cargo = dados.cargo();
 		this.usuarioSistema = dados.usuarioSistema();
 		this.curso = dados.curso();
+
+	}
+
+
+	public void atualizarInformacoes(DadoUpdateServidor dados) {
+		if(dados.nome() != null){
+			this.nome = dados.nome();
+		}
+
+		if(dados.usuarioSistema() != null){
+			this.usuarioSistema.atualizarInformacoes(dados.usuarioSistema());
+		}
+
+		if(dados.cargo() != null){
+			this.cargo = dados.cargo();
+		}
+
+		if(dados.curso() != null){
+			this.curso = dados.curso();
+		}
 
 	}
 

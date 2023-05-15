@@ -1,20 +1,15 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.ServidorImplementacao;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoUpdateServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroServidor;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -26,6 +21,9 @@ public class ServidorController {
 	//CRUD PARA CLASSE SERVIDOR
     @Autowired
     private ServidorImplementacao servidorImplementacao;
+
+    @Autowired
+    TokenService tokenService;
 
 
     @PostMapping("/cadastroServidor")
@@ -48,7 +46,16 @@ public class ServidorController {
         var servidor = servidorImplementacao.listar();
         return ResponseEntity.ok(servidor);
     }
-	
+
+    @PutMapping("/atualizar")
+	public ResponseEntity atualizar(@RequestBody DadoUpdateServidor dadosCadastroServidor, @RequestHeader("Authorization") String token) {
+
+		var email = tokenService.getSubject(token.replace("Bearer ", ""));
+
+        return servidorImplementacao.atualizaServidor(dadosCadastroServidor,email);
+	}
+
+
 //	//Método para teste se retorna dados do servidor de id 1
 //	/*
 //	@RequestMapping("/alo")

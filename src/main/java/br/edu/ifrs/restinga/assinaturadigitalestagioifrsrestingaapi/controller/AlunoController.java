@@ -74,7 +74,7 @@ public class AlunoController extends BaseController{
         var aluno = alunoRepository.getReferenceById(dadosAluno.id());
        
         if(!aluno.getUsuarioSistema().getEmail().equals(email)){
-            return ResponseEntity.noContent().build();
+            return TratadorDeErros.tratarErro403();
         }
 
         aluno.atualizarInformacoes(dadosAluno);

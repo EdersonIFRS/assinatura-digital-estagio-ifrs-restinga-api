@@ -25,7 +25,7 @@ public class TratadorDeErros {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity tratarErro403(){
+    public static ResponseEntity tratarErro403(){
         return ResponseEntity.status(403)
                 .body("Não Autorizado");
     }
