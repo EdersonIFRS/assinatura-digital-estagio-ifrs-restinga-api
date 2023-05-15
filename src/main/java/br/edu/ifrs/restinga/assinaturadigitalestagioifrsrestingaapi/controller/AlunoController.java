@@ -2,14 +2,11 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import java.util.List;
 
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.UsuarioRepository;
+
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,34 +16,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.AlunoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtualizacaoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosDetalhamentoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.EmailValidator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
-public class AlunoController {
-    
-    @Autowired
-    private AlunoRepository alunoRepository;
+public class AlunoController extends BaseController{
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private TokenService tokenService;
-
-    @Autowired
-    private EmailValidator emailValidator;
 
     @PostMapping("/cadastrarAluno")
     @Transactional
@@ -66,6 +46,7 @@ public class AlunoController {
                 dados.usuarioSistema().getEmail(),
                 passwordEncoder.encode(dados.usuarioSistema().getSenha())
                 );
+
 
         aluno.setUsuarioSistema(usuarioSistema);
 
