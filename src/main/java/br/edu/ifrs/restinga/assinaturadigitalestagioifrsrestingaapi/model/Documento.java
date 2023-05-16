@@ -18,8 +18,8 @@ public class Documento {
     private long id;
 
     //Futuramente//
-    //@Column
-    //private long chamadoId;
+//    @Column
+//    private long d;
     @Column
     private String nome;
     @Lob

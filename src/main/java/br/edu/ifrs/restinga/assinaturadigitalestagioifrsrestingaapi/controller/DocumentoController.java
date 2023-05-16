@@ -2,6 +2,7 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.DocumentoRepository;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DocumentoDto;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
@@ -17,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,7 +62,7 @@ public class DocumentoController {
             return ResponseEntity.badRequest().build();
         }
     }
-    @GetMapping("/deletarDocumento")
+    @DeleteMapping("/deletarDocumento")
     public ResponseEntity<String> deletarDocumento(@RequestParam Long chamadoId){
         Optional<Documento> doc = documentoRepository.findById(chamadoId);
         if(doc.isPresent()){
@@ -71,21 +73,27 @@ public class DocumentoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
     @GetMapping("/listarDocumento")
     @ResponseBody
-    public ResponseEntity<String> listarDocumentos(@RequestParam Long chamadoId){
-        Optional<Documento> doc = documentoRepository.findById(chamadoId);
-        if(doc.isPresent()){
-                String nome = doc.get().getNome();
-                return ResponseEntity.ok()
-                        .contentLength(nome.length())
-                        .contentType(MediaType.TEXT_PLAIN)
-                        .body(nome);
+    public ResponseEntity<List<DocumentoDto>> listarDocumentos() {
+        List<Documento> documentos = documentoRepository.findAll();
+        List<DocumentoDto> documentosDto = new ArrayList<>();
 
+        for (Documento documento : documentos) {
+            DocumentoDto documentoDto = new DocumentoDto();
+            documentoDto.setId(documento.getId());
+            documentoDto.setNome(documento.getNome());
+            documentosDto.add(documentoDto);
         }
-        else{
+
+        if (!documentosDto.isEmpty()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(documentosDto);
+        } else {
             return ResponseEntity.notFound().build();
         }
-
     }
 }
