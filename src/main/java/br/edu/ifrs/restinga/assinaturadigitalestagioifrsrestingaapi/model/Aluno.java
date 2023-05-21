@@ -25,19 +25,20 @@ public class Aluno {
     private String turno;
     private String matricula;
     private String ingresso;
-    private String curso;
+
+    @OneToOne
+    private Curso curso;
 
     private boolean ativo;
 
-    public Aluno(DadosCadastroAluno dados) {
+    public Aluno(DadosCadastroAluno dados, Curso curso) {
         this.ativo = true;
         this.nomeCompleto = dados.nomeCompleto();
         this.usuarioSistema = dados.usuarioSistema();
         this.turno = dados.turno();
         this.matricula = dados.matricula();
         this.ingresso = dados.ingresso();
-        this.curso = dados.curso();
-
+        this.curso = curso;
     }    
 
     public void atualizarInformacoes(@Valid DadosAtualizacaoAluno dados) {

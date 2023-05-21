@@ -1,10 +1,14 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.CursoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -26,13 +30,16 @@ import jakarta.validation.Valid;
 
 @RestController
 public class AlunoController extends BaseController{
+    @Autowired
+    CursoRepository cursoRepository;
 
 
     @PostMapping("/cadastrarAluno")
     @Transactional
     public ResponseEntity cadastrarAluno(@RequestBody @Valid DadosCadastroAluno dados, UriComponentsBuilder uriBuilder){
-        var aluno = new Aluno(dados);
-        
+        //buscando curso por ID para salvar no aluno pelo construtor.
+        Optional<Curso> curso = cursoRepository.findById(dados.curso());
+        var aluno = new Aluno(dados,curso.get());
 
         if(usuarioRepository.findByEmail(dados.usuarioSistema().getEmail())!= null){
             return TratadorDeErros.tratarErro409();
@@ -41,7 +48,6 @@ public class AlunoController extends BaseController{
         if (!emailValidator.validaEmail(aluno.getUsuarioSistema().getEmail())) {
             return TratadorDeErros.tratarErro400(HttpStatus.BAD_REQUEST);
         }
-
         var usuarioSistema = new Usuario(
                 dados.usuarioSistema().getEmail(),
                 passwordEncoder.encode(dados.usuarioSistema().getSenha())

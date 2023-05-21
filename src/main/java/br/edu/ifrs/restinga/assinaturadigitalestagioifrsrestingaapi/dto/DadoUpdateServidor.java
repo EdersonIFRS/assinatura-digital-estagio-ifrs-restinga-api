@@ -11,7 +11,7 @@ public record DadoUpdateServidor(
         @NotBlank
         String cargo,
         @NotBlank
-        String curso,
+        long curso,
         @NotNull @Valid
         Usuario usuarioSistema) {
 }

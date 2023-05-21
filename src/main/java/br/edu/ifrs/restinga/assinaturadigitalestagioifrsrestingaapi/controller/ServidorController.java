@@ -1,9 +1,11 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.ServidorImplementacao;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.CursoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoUpdateServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.Optional;
 
 
 @RestController
@@ -24,12 +28,16 @@ public class ServidorController {
 
     @Autowired
     TokenService tokenService;
+    @Autowired
+    CursoRepository cursoRepository;
 
 
     @PostMapping("/cadastroServidor")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity salvar(@RequestBody @Valid DadosCadastroServidor dadosCadastroServidor, UriComponentsBuilder uriBuilder) {
-        return servidorImplementacao.salvar(dadosCadastroServidor,uriBuilder);
+        Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
+        return servidorImplementacao.salvar(dadosCadastroServidor,curso.get(),uriBuilder);
+
     }
 
 
@@ -49,10 +57,10 @@ public class ServidorController {
 
     @PutMapping("/atualizar")
 	public ResponseEntity atualizar(@RequestBody DadoUpdateServidor dadosCadastroServidor, @RequestHeader("Authorization") String token) {
-
+        Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
 		var email = tokenService.getSubject(token.replace("Bearer ", ""));
 
-        return servidorImplementacao.atualizaServidor(dadosCadastroServidor,email);
+        return servidorImplementacao.atualizaServidor(dadosCadastroServidor, curso.get(),email);
 	}
 
 
