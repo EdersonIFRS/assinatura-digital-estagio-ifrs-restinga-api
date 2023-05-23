@@ -37,8 +37,7 @@ public class SolicitacaoController {
 
     @PostMapping(value = "/cadastrarSolicitacao")
     @Transactional
-    public ResponseEntity cadastrarSolicitacao(@RequestBody DadosCadastroSolicitacao dados){
-
+    public ResponseEntity cadastrarSolicitacao(@RequestPart("dados") DadosCadastroSolicitacao dados, @RequestParam("file") MultipartFile file){
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
         Optional<Servidor> servidor = servidorRepository.findById(dados.servidorId());
         SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo());

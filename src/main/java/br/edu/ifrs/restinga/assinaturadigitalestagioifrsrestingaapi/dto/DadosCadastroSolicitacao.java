@@ -10,8 +10,6 @@ public record DadosCadastroSolicitacao(
         @NotBlank
         long alunoId,
         @NotBlank
-        long servidorId,
-        @NotBlank
-        List<MultipartFile> documentos
+        long servidorId
 ) {
 }

@@ -23,6 +23,8 @@ public class SolicitarEstagio {
     @OneToOne
     private Aluno aluno;
 
+    private String status;
+
     @OneToOne Servidor servidor;
 
     private LocalDateTime dataSolicitacao;
@@ -32,5 +34,6 @@ public class SolicitarEstagio {
         this.servidor = servidor;
         this.tipo = tipo;
         this.dataSolicitacao = LocalDateTime.now();
+        this.status = "1";
     }
 }
