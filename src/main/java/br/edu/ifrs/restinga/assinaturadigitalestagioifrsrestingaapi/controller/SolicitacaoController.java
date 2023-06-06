@@ -1,7 +1,9 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.FileImp;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.AlunoRepository;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.DocumentoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.ServidorRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.SolicitacaoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
@@ -26,21 +28,18 @@ import java.util.Optional;
 
 
 @RestController
-public class SolicitacaoController {
+public class SolicitacaoController extends BaseController{
     @Autowired
-    SolicitacaoRepository solicitacaoRepository;
-    @Autowired
-    AlunoRepository alunoRepository;
-    @Autowired
-    ServidorRepository servidorRepository;
-
+    FileImp fileImp;
 
     @PostMapping(value = "/cadastrarSolicitacao")
     @Transactional
-    public ResponseEntity cadastrarSolicitacao(@RequestPart("dados") DadosCadastroSolicitacao dados, @RequestParam("file") MultipartFile file){
+    public ResponseEntity cadastrarSolicitacao(@RequestPart("dados") DadosCadastroSolicitacao dados,
+                                               @RequestParam("file") List<MultipartFile> file){
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
         Optional<Servidor> servidor = servidorRepository.findById(dados.servidorId());
         SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo());
+        fileImp.SaveDocBlob(file,solicitarEstagio);
         solicitacaoRepository.save(solicitarEstagio);
         return ResponseEntity.ok().build();
     }
@@ -48,8 +47,8 @@ public class SolicitacaoController {
     @GetMapping("/listarDocumentos")
     @ResponseBody
     public String listar(@RequestParam long id){
-        Optional<SolicitarEstagio> sol = solicitacaoRepository.findById(id);
-        return sol.get().getDocumento().get(1).getNome();
+        Optional<SolicitarEstagio> solicitacao = solicitacaoRepository.findById(id);
+        return solicitacao.get().getDocumento().get(1).getNome();
     }
 
 }

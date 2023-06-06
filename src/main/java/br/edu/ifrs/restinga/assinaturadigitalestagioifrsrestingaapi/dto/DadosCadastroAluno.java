@@ -1,5 +1,6 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto;
 
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -19,6 +20,7 @@ public record DadosCadastroAluno(
     String matricula,
         @NotBlank
     String ingresso,
+        @NotNull
         @Positive
         long curso
 

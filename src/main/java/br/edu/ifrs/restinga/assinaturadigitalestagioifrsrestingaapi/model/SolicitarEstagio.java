@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "SolicitarEstagio")
@@ -19,7 +20,7 @@ public class SolicitarEstagio {
     private String tipo;
 
     @OneToMany(mappedBy = "solicitarEstagio")
-    private List<Documento> documento;
+    private List<Documento> documento = new ArrayList<>();
     @OneToOne
     private Aluno aluno;
 

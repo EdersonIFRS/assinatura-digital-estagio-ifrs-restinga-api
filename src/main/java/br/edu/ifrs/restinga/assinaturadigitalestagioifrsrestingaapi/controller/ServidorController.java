@@ -36,6 +36,9 @@ public class ServidorController {
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity salvar(@RequestBody @Valid DadosCadastroServidor dadosCadastroServidor, UriComponentsBuilder uriBuilder) {
         Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
+        if(curso.isEmpty()){
+            return servidorImplementacao.salvar(dadosCadastroServidor,null,uriBuilder);
+        }
         return servidorImplementacao.salvar(dadosCadastroServidor,curso.get(),uriBuilder);
 
     }

@@ -1,9 +1,7 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.ServidorImplementacao;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.AlunoRepository;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.ServidorRepository;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.UsuarioRepository;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.*;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +14,9 @@ public class BaseController {
     AlunoRepository alunoRepository;
 
     @Autowired
+    SolicitacaoRepository solicitacaoRepository;
+
+    @Autowired
     public UsuarioRepository usuarioRepository;
 
     @Autowired
@@ -24,6 +25,9 @@ public class BaseController {
 
     @Autowired
     TokenService tokenService;
+
+    @Autowired
+    public DocumentoRepository documentoRepository;
 
     @Autowired
     protected
