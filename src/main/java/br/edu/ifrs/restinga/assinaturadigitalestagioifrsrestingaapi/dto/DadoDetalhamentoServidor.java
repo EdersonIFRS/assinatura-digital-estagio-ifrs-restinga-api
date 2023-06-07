@@ -5,6 +5,6 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuari
 
 public record DadoDetalhamentoServidor(Long id, String nome,String curso,String cargo, Usuario usuarioSistema) {
     public DadoDetalhamentoServidor(Servidor servidor) {
-        this(servidor.getId(),servidor.getNome(),servidor.getCurso(), servidor.getCargo(), servidor.getUsuarioSistema());
+        this(servidor.getId(),servidor.getNome(),servidor.getCurso().getNomeCurso(), servidor.getCargo(), servidor.getUsuarioSistema());
     }
 }

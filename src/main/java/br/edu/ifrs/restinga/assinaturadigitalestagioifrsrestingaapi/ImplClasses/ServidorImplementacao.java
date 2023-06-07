@@ -8,6 +8,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoUpda
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosDetalhamentoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
 import jakarta.persistence.Query;
 import org.springframework.http.HttpStatus;
@@ -35,9 +36,8 @@ public class ServidorImplementacao extends BaseController {
 	}
 
 	@Transactional
-	public ResponseEntity salvar(DadosCadastroServidor dadosCadastroServidor, UriComponentsBuilder uriBuilder) {
-
-		var servidor = new Servidor(dadosCadastroServidor);
+	public ResponseEntity salvar(DadosCadastroServidor dadosCadastroServidor, Curso curso, UriComponentsBuilder uriBuilder) {
+		var servidor = new Servidor(dadosCadastroServidor, curso);
 
 		if(usuarioRepository.findByEmail(dadosCadastroServidor.usuarioSistema().getEmail())!= null){
 			return TratadorDeErros.tratarErro409();
@@ -77,7 +77,7 @@ public class ServidorImplementacao extends BaseController {
 
 	@Transactional
 	@SuppressWarnings("unchecked")
-	public ResponseEntity atualizaServidor(DadoUpdateServidor dados, String email) {
+	public ResponseEntity atualizaServidor(DadoUpdateServidor dados, Curso curso, String email) {
 
 		if(!dados.usuarioSistema().getEmail().equals(email)){
 			return TratadorDeErros.tratarErro403();
@@ -90,7 +90,7 @@ public class ServidorImplementacao extends BaseController {
 		var servidor = servidorRepository.getReferenceById((long) ID);
 
 
-		servidor.atualizarInformacoes(dados);
+		servidor.atualizarInformacoes(dados, curso);
 
 		return ResponseEntity.ok(new DadoDetalhamentoServidor(servidor));
 	}

@@ -22,7 +22,9 @@ public class Servidor {
 
 	private String nome;
 	private String cargo;
-	private String curso;
+
+	@OneToOne
+	private Curso curso;
 	
 
 
@@ -30,16 +32,16 @@ public class Servidor {
 	@JoinColumn(name = "usuario_sistema_id")
 	private Usuario usuarioSistema;
 
-	public Servidor(DadosCadastroServidor dados) {
+	public Servidor(DadosCadastroServidor dados, Curso curso) {
 		this.nome = dados.nome();
 		this.cargo = dados.cargo();
 		this.usuarioSistema = dados.usuarioSistema();
-		this.curso = dados.curso();
+		this.curso = curso;
 
 	}
 
 
-	public void atualizarInformacoes(DadoUpdateServidor dados) {
+	public void atualizarInformacoes(DadoUpdateServidor dados, Curso curso) {
 		if(dados.nome() != null){
 			this.nome = dados.nome();
 		}
@@ -52,8 +54,8 @@ public class Servidor {
 			this.cargo = dados.cargo();
 		}
 
-		if(dados.curso() != null){
-			this.curso = dados.curso();
+		if(curso != null){
+			this.curso = curso;
 		}
 
 	}
