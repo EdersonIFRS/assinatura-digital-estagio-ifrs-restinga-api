@@ -7,6 +7,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repos
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.ServidorRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.SolicitacaoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
@@ -38,7 +39,7 @@ public class SolicitacaoController extends BaseController{
                                                @RequestParam("file") List<MultipartFile> file){
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
         Optional<Servidor> servidor = servidorRepository.findById(dados.servidorId());
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo());
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao());
         fileImp.SaveDocBlob(file,solicitarEstagio);
         solicitacaoRepository.save(solicitarEstagio);
         return ResponseEntity.ok().build();
@@ -49,6 +50,19 @@ public class SolicitacaoController extends BaseController{
     public String listar(@RequestParam long id){
         Optional<SolicitarEstagio> solicitacao = solicitacaoRepository.findById(id);
         return solicitacao.get().getDocumento().get(1).getNome();
+    }
+
+    @GetMapping("/dadosSolicitacaoAluno")
+    public ResponseEntity<List<DadosListagemSolicitacaoAluno>> obterSolicitacoes(@RequestHeader("Authorization") String token) {
+        String email = tokenService.getSubject(token.replace("Bearer ", ""));
+        Aluno aluno = alunoRepository.findByUsuarioSistemaEmail(email);
+
+        List<SolicitarEstagio> solicitacoes = solicitacaoRepository.findByAluno(aluno);
+        List<DadosListagemSolicitacaoAluno> dadosSolicitacoes = solicitacoes.stream()
+                .map(DadosListagemSolicitacaoAluno::new)
+                .toList();
+
+        return ResponseEntity.ok(dadosSolicitacoes);
     }
 
 }
