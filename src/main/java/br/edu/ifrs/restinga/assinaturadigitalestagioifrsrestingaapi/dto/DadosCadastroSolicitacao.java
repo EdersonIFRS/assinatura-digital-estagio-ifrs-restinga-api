@@ -10,6 +10,6 @@ public record DadosCadastroSolicitacao(
         @NotBlank
         long alunoId,
         @NotBlank
-        long servidorId
+        long cursoId
 ) {
 }

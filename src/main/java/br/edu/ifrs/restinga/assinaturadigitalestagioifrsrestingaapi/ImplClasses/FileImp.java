@@ -16,7 +16,6 @@ import java.util.List;
 @Service
 public class FileImp extends BaseController{
 
-
     @Transactional
     public boolean SaveDocBlob(List<MultipartFile> docs, SolicitarEstagio solicitacaoId) {
         try {
@@ -34,6 +33,5 @@ public class FileImp extends BaseController{
             e.printStackTrace();
             return false;
         }
-
     }
 }
