@@ -36,4 +36,7 @@ public class BaseController {
     @Autowired
     public ServidorRepository servidorRepository;
 
+    @Autowired
+    public RoleRepository roleRepository;
+
 }

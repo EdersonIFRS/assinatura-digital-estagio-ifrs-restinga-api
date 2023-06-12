@@ -38,6 +38,8 @@ public class SecurityConfigurations {
                 .and().authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST,"/login").permitAll()
                 .requestMatchers(HttpMethod.POST,"/cadastrarAluno").permitAll()
+                .requestMatchers("/assinaturaapi/alunos/**").hasRole("ALUNO")
+                .requestMatchers("/assinaturaapi/servidores/**").hasRole("SERVIDOR")
                 .anyRequest().authenticated()
                 .and().addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

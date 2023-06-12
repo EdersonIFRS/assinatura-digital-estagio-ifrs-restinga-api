@@ -1,6 +1,7 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses;
 
 import java.util.List;
+import java.util.Optional;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller.BaseController;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoDetalhamentoServidor;
@@ -9,6 +10,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCad
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosDetalhamentoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Role;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
 import jakarta.persistence.Query;
 import org.springframework.http.HttpStatus;
@@ -37,7 +39,9 @@ public class ServidorImplementacao extends BaseController {
 
 	@Transactional
 	public ResponseEntity salvar(DadosCadastroServidor dadosCadastroServidor, Curso curso, UriComponentsBuilder uriBuilder) {
-		var servidor = new Servidor(dadosCadastroServidor, curso);
+		Optional<Role> role = roleRepository.findById(2L);
+
+		var servidor = new Servidor(dadosCadastroServidor, curso,role.get());
 
 		if(usuarioRepository.findByEmail(dadosCadastroServidor.usuarioSistema().getEmail())!= null){
 			return TratadorDeErros.tratarErro409();
@@ -51,7 +55,8 @@ public class ServidorImplementacao extends BaseController {
 
 		var usuarioSistemaServidor = new Usuario(
 				dadosCadastroServidor.usuarioSistema().getEmail(),
-				passwordEncoder.encode(dadosCadastroServidor.usuarioSistema().getSenha())
+				passwordEncoder.encode(dadosCadastroServidor.usuarioSistema().getSenha()),
+				servidor.getRole()
 		);
 
 		servidor.setUsuarioSistema(usuarioSistemaServidor);
