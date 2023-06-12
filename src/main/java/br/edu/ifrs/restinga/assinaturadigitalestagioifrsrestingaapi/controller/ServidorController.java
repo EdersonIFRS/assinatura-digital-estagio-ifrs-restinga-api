@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @RestController
 @ResponseBody
-public class ServidorController {
+public class ServidorController extends BaseController{
 	
 	//CRUD PARA CLASSE SERVIDOR
     @Autowired
@@ -38,6 +38,10 @@ public class ServidorController {
         Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
         if(curso.isEmpty()){
             return servidorImplementacao.salvar(dadosCadastroServidor,null,uriBuilder);
+        }
+        if(servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId())){
+            //Servido já cadastrado para o curso.
+            return ResponseEntity.badRequest().build();
         }
         return servidorImplementacao.salvar(dadosCadastroServidor,curso.get(),uriBuilder);
 
@@ -62,7 +66,6 @@ public class ServidorController {
 	public ResponseEntity atualizar(@RequestBody DadoUpdateServidor dadosCadastroServidor, @RequestHeader("Authorization") String token) {
         Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
 		var email = tokenService.getSubject(token.replace("Bearer ", ""));
-
         return servidorImplementacao.atualizaServidor(dadosCadastroServidor, curso.get(),email);
 	}
 
