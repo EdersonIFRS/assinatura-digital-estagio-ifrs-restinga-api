@@ -13,8 +13,10 @@ public record DadosCadastroSolicitacao(
         long cursoId,
         @NotBlank
         String titulo,
-        @NotBlank
+        
+        @Nullable
         String conteudo,
+        @Nullable
         String observacao
 
 ) {
