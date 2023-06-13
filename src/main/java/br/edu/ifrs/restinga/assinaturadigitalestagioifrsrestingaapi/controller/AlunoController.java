@@ -7,6 +7,7 @@ import java.util.Optional;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.CursoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Role;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,8 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosLis
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 
 @RestController
 public class AlunoController extends BaseController{
@@ -32,7 +35,9 @@ public class AlunoController extends BaseController{
     public ResponseEntity cadastrarAluno(@RequestBody @Valid DadosCadastroAluno dados, UriComponentsBuilder uriBuilder){
         //buscando curso por ID para salvar no aluno pelo construtor.
         Optional<Curso> curso = cursoRepository.findById(dados.curso());
-        var aluno = new Aluno(dados,curso.get());
+
+        Optional<Role> role = roleRepository.findById(1L);
+        var aluno = new Aluno(dados,curso.get(),role.get());
 
         if(usuarioRepository.findByEmail(dados.usuarioSistema().getEmail())!= null){
             return TratadorDeErros.tratarErro409();
@@ -43,11 +48,13 @@ public class AlunoController extends BaseController{
         }
         var usuarioSistema = new Usuario(
                 dados.usuarioSistema().getEmail(),
-                passwordEncoder.encode(dados.usuarioSistema().getSenha())
+                passwordEncoder.encode(dados.usuarioSistema().getSenha()),
+                aluno.getRole()
                 );
 
 
         aluno.setUsuarioSistema(usuarioSistema);
+
 
         usuarioRepository.save(aluno.getUsuarioSistema());
         alunoRepository.save(aluno);
@@ -57,7 +64,7 @@ public class AlunoController extends BaseController{
         return ResponseEntity.created(uri).body(new DadosDetalhamentoAluno(aluno));
     }
 
-    @GetMapping("/buscarAlunos")
+    @GetMapping("alunos/buscarAlunos")
     public ResponseEntity<List<DadosListagemAluno>> buscarAlunos(){
         var lista = alunoRepository.findAll().stream().map(DadosListagemAluno::new).toList();
 

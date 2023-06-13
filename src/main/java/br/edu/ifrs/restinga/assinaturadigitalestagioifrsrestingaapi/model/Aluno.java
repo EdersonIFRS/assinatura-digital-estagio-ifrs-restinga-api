@@ -8,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Entity(name = "Aluno")
 @Data
 @NoArgsConstructor
@@ -27,11 +29,15 @@ public class Aluno {
     private String ingresso;
 
     @OneToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+    @OneToOne
     private Curso curso;
 
     private boolean ativo;
 
-    public Aluno(DadosCadastroAluno dados, Curso curso) {
+    public Aluno(DadosCadastroAluno dados, Curso curso, Role role) {
         this.ativo = true;
         this.nomeCompleto = dados.nomeCompleto();
         this.usuarioSistema = dados.usuarioSistema();
@@ -39,7 +45,8 @@ public class Aluno {
         this.matricula = dados.matricula();
         this.ingresso = dados.ingresso();
         this.curso = curso;
-    }    
+        this.role = role;
+    }
 
     public void atualizarInformacoes(@Valid DadosAtualizacaoAluno dados) {
         if(dados.nomeCompleto() != null){

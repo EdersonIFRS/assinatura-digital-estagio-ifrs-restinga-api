@@ -11,8 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Table(name = "usuarios" )
 @Entity(name = "Usuario")
@@ -30,11 +29,18 @@ public class Usuario implements UserDetails {
     @NotBlank
     private String senha;
 
-    public Usuario(String email, String senha) {
+    @ManyToOne
+    private Role roles;
+
+    public Usuario(String email, String senha,Role role) {
         this.email = email;
         this.senha = senha;
+        this.roles = role;
     }
 
+    public Role getRoles() {
+        return roles;
+    }
 
     public void setSenha(String senha) {
         this.senha = senha;
@@ -43,8 +49,9 @@ public class Usuario implements UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+        return List.of(new SimpleGrantedAuthority("ROLE_ALUNO"),new SimpleGrantedAuthority("ROLE_SERVIDOR"));
     }
+
 
     @Override
     @JsonIgnore

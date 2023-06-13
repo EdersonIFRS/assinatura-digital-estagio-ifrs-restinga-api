@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
+
 @Table(name = "servidores" )
 @Entity(name = "Servidor")
 @Data
@@ -25,23 +27,26 @@ public class Servidor {
 
 	@OneToOne
 	private Curso curso;
-	
 
+	@OneToOne
+	@JoinColumn(name = "role_id")
+	private Role role;
 
 	@OneToOne
 	@JoinColumn(name = "usuario_sistema_id")
 	private Usuario usuarioSistema;
 
-	public Servidor(DadosCadastroServidor dados, Curso curso) {
+	public Servidor(DadosCadastroServidor dados, Curso curso,Role role) {
 		this.nome = dados.nome();
 		this.cargo = dados.cargo();
 		this.usuarioSistema = dados.usuarioSistema();
 		this.curso = curso;
+		this.role = role;
 
 	}
 
 
-	public void atualizarInformacoes(DadoUpdateServidor dados, Curso curso) {
+    public void atualizarInformacoes(DadoUpdateServidor dados, Curso curso) {
 		if(dados.nome() != null){
 			this.nome = dados.nome();
 		}
