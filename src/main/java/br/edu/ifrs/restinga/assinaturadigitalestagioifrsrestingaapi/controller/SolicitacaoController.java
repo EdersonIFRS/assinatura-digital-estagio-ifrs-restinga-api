@@ -65,6 +65,20 @@ public class SolicitacaoController extends BaseController{
 
         return ResponseEntity.ok(dadosSolicitacoes);
     }
+
+    
+    @GetMapping("/listarSolicitacoes")
+    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoes() {
+        var solicitacoes = solicitacaoRepository.findAll();
+        if (solicitacoes.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.ok(solicitacoes);
+    }
+    
+
+
+    
     @GetMapping("/listarSolicitacoesPorServidor/{servidorId}")
     public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorServidor(@PathVariable("servidorId") Long servidorId) {
         var servidor = servidorRepository.findById(servidorId);
