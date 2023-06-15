@@ -20,9 +20,9 @@ import java.util.Optional;
 
 @RestController
 @ResponseBody
-public class ServidorController extends BaseController{
-	
-	//CRUD PARA CLASSE SERVIDOR
+public class ServidorController extends BaseController {
+
+    // CRUD PARA CLASSE SERVIDOR
     @Autowired
     private ServidorImplementacao servidorImplementacao;
 
@@ -36,14 +36,14 @@ public class ServidorController extends BaseController{
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity salvar(@RequestBody @Valid DadosCadastroServidor dadosCadastroServidor, UriComponentsBuilder uriBuilder) {
         Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
-        if(curso.isEmpty()){
-            return servidorImplementacao.salvar(dadosCadastroServidor,null,uriBuilder);
+        if (curso.isEmpty()) {
+            return servidorImplementacao.salvar(dadosCadastroServidor, null, uriBuilder);
         }
-        if(servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId())){
-            //Servido já cadastrado para o curso.
+        if (servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId())) {
+            // Servido já cadastrado para o curso.
             return ResponseEntity.badRequest().build();
         }
-        return servidorImplementacao.salvar(dadosCadastroServidor,curso.get(),uriBuilder);
+        return servidorImplementacao.salvar(dadosCadastroServidor, curso.get(), uriBuilder);
 
     }
 
@@ -57,94 +57,35 @@ public class ServidorController extends BaseController{
 
 
     @GetMapping("/listarServidores")
-    public ResponseEntity listarServidores(){
+    public ResponseEntity listarServidores() {
         var servidor = servidorImplementacao.listar();
         return ResponseEntity.ok(servidor);
     }
 
     @PutMapping("/atualizar")
-	public ResponseEntity atualizar(@RequestBody DadoUpdateServidor dadosCadastroServidor, @RequestHeader("Authorization") String token) {
+    public ResponseEntity atualizar(@RequestBody DadoUpdateServidor dadosCadastroServidor, @RequestHeader("Authorization") String token) {
         Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());
-		var email = tokenService.getSubject(token.replace("Bearer ", ""));
-        return servidorImplementacao.atualizaServidor(dadosCadastroServidor, curso.get(),email);
-	}
+        var email = tokenService.getSubject(token.replace("Bearer ", ""));
+        return servidorImplementacao.atualizaServidor(dadosCadastroServidor, curso.get(), email);
+    }
 
+    @GetMapping("/buscarServidoresPorEmail/{email}")
+    public ResponseEntity buscarServidorPorEmail(@PathVariable String email) {
+        var servidores = servidorImplementacao.listar();
 
-//	//Método para teste se retorna dados do servidor de id 1
-//	/*
-//	@RequestMapping("/alo")
-//	@ResponseBody
-//	public String serv1() {
-//
-//		return servInt.buscar(1l).getNome();
-//
-//	}*/
-//
-//
-//	//Método POST para receber dados para cadastro do servidor
-//
-//	@PostMapping("/cadastroServidor")
-//	@ResponseStatus(HttpStatus.CREATED)
-//	public ResponseEntity salvar(@RequestBody @Valid Servidor servidor) {
-//
-//		servInt.salvar(servidor);
-//		return ResponseEntity.noContent().build();
-//	}
-//
-//
-//	//GET
-//
-//	//Buscar Servidor por id
-//	@GetMapping("/buscar/{id}")
-//	public ResponseEntity buscar(@PathVariable Long id) {
-//
-//		Servidor serv = servInt.buscar(id);
-//		return ResponseEntity.ok(serv);
-//
-//	}
-//
-//	/*
-//	@GetMapping("/buscar/{id}")
-//	public Servidor buscar(@PathVariable Long id) {
-//
-//		Servidor serv = servInt.buscar(id);
-//		return serv;
-//
-//	}
-//	*/
-//
-//
-//
-//	@GetMapping("/listarServidores")
-//	public ResponseEntity listar(){
-//
-//		return ResponseEntity.ok(servInt.listar());
-//	}
-//
-//
-//
-//	//Atualizar Servidor
-//
-//	@PutMapping("/atualizar/{id}")
-//	public ResponseEntity atualizar(@RequestBody Servidor servidor, @PathVariable Long id) {
-//	    Servidor servidorExistente = servInt.buscar(id);
-//	    BeanUtils.copyProperties(servidor, servidorExistente, "id");
-//	    servInt.salvar(servidorExistente);
-//
-//		return ResponseEntity.noContent().build();
-//	}
-//
-//
-//	//  DELETE para remover servidor por id
-//	@DeleteMapping("/del/{id}")
-//	public ResponseEntity remover(@PathVariable Long id) {
-//	    Servidor servidorExistente = servInt.buscar(id);
-//	    servInt.remover(servidorExistente);
-//
-//		return ResponseEntity.noContent().build();
-//	}
-//
-		  
+        // Percorrer a lista de servidores e encontrar o servidor com o email correspondente
+        Servidor servidorEncontrado = null;
+        for (Servidor servidor : servidores) {
+            if (servidor.getUsuarioSistema().getEmail().equals(email)) {
+                servidorEncontrado = servidor;
+                break;
+            }
+        }
 
-
+        if (servidorEncontrado != null) {
+            return ResponseEntity.ok(servidorEncontrado);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
