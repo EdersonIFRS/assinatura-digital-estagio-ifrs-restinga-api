@@ -83,15 +83,31 @@ public class SolicitacaoController extends BaseController{
     public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorServidor(@PathVariable("servidorId") Long servidorId) {
         var servidor = servidorRepository.findById(servidorId);
         if (servidor.isPresent()) {
-        var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor.get());
-        if (solicitacoesPorServidor.isEmpty()) {
-            return ResponseEntity.noContent().build();
+            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor.get());
+            if (solicitacoesPorServidor.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.ok(solicitacoesPorServidor);
+            }
         } else {
-            return ResponseEntity.ok(solicitacoesPorServidor);
+            return ResponseEntity.notFound().build();
         }
-    } else {
-        return ResponseEntity.notFound().build();
     }
-    }
+        
+    @GetMapping("/listarSolicitacoesPorEmailServidor/{email}")
+    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorServidor(@PathVariable("email") String email) {
+        var servidor = servidorRepository.findByEmail(email);
+        if (servidor.isPresent()) {
+            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor.get());
+            if (solicitacoesPorServidor.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.ok(solicitacoesPorServidor);
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }    
+    
 
 }
