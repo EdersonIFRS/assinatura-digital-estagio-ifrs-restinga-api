@@ -11,6 +11,6 @@ public interface ServidorRepository extends JpaRepository<Servidor,Long> {
 
     boolean existsServidorByCurso_IdEquals(long id);
     Optional findServidorByCurso_Id(long id);
-    Optional<Servidor> findByEmail(String email);
+    
 
 }
