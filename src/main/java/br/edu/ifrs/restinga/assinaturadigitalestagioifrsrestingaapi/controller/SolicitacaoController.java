@@ -96,7 +96,7 @@ public class SolicitacaoController extends BaseController{
         
     @GetMapping("/listarSolicitacoesPorEmailServidor/{email}")
     public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorServidor(@PathVariable("email") String email) {
-        var servidor = servidorRepository.findByEmail(email);
+        var servidor = usuarioRepository.findByEmail(email);
         if (servidor.isPresent()) {
             var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor.get());
             if (solicitacoesPorServidor.isEmpty()) {
@@ -107,7 +107,7 @@ public class SolicitacaoController extends BaseController{
         } else {
             return ResponseEntity.notFound().build();
         }
-    }    
+    }
     
 
 }
