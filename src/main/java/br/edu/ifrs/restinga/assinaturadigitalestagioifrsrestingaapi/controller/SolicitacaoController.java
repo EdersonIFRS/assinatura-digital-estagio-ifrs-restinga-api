@@ -94,11 +94,16 @@ public class SolicitacaoController extends BaseController{
         }
     }
         
-    @GetMapping("/listarSolicitacoesPorEmailServidor/{email}")
-    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorServidor(@PathVariable("email") String email) {
-        var servidor = usuarioRepository.findByEmail(email);
-        if (servidor.isPresent()) {
-            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor.get());
+
+
+    @GetMapping("/listarSolicitacoesPorEmailServidor")
+    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorEmailServidor(@RequestHeader("Authorization") String token) {
+        String email = tokenService.getSubject(token.replace("Bearer ", ""));
+        var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+        
+        if (servidor != null) {
+            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor);
+            
             if (solicitacoesPorServidor.isEmpty()) {
                 return ResponseEntity.noContent().build();
             } else {
@@ -108,6 +113,23 @@ public class SolicitacaoController extends BaseController{
             return ResponseEntity.notFound().build();
         }
     }
+
+                /*
+    @GetMapping("/listarSolicitacoesPorEmailServidor/{email}")
+    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorEmailServidor(@PathVariable("email") String email) {
+        var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+        if (servidor != null) {
+            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor);
+            if (solicitacoesPorServidor.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.ok(solicitacoesPorServidor);
+            }
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+    */
     
 
 }
