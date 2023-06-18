@@ -1,4 +1,5 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.web.multipart.MultipartFile;
 

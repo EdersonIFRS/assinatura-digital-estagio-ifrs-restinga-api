@@ -6,6 +6,8 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoUpda
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +34,7 @@ public class ServidorController extends BaseController {
     CursoRepository cursoRepository;
 
 
-    @PostMapping("/cadastroServidor")
+    @PostMapping("/cadastrarServidor")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity salvar(@RequestBody @Valid DadosCadastroServidor dadosCadastroServidor, UriComponentsBuilder uriBuilder) {
         Optional<Curso> curso = cursoRepository.findById(dadosCadastroServidor.curso());

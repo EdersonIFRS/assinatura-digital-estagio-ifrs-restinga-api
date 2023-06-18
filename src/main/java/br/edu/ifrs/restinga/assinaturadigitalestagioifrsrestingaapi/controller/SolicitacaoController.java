@@ -4,6 +4,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.ServidorRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoAluno;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.SolicitarEstagio;
@@ -74,6 +75,7 @@ public class SolicitacaoController extends BaseController{
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.ok(solicitacoes);
+        }
     }
     
 
@@ -97,39 +99,33 @@ public class SolicitacaoController extends BaseController{
 
 
     @GetMapping("/listarSolicitacoesPorEmailServidor")
-    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorEmailServidor(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<List<DadosListagemSolicitacaoServidor>> listarSolicitacoesPorEmailServidor(@RequestHeader("Authorization") String token) {
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+
+        List<SolicitarEstagio> solicitacoes = solicitacaoRepository.findByServidor(servidor);
+
+        List<DadosListagemSolicitacaoServidor> dadosSolicitacoes = solicitacoes.stream().map(DadosListagemSolicitacaoServidor::new).toList();
         
-        if (servidor != null) {
-            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor);
-            
-            if (solicitacoesPorServidor.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.ok(solicitacoesPorServidor);
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(dadosSolicitacoes);
     }
 
-                /*
-    @GetMapping("/listarSolicitacoesPorEmailServidor/{email}")
-    public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorEmailServidor(@PathVariable("email") String email) {
-        var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
-        if (servidor != null) {
-            var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor);
-            if (solicitacoesPorServidor.isEmpty()) {
-                return ResponseEntity.noContent().build();
-            } else {
-                return ResponseEntity.ok(solicitacoesPorServidor);
-            }
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-    */
+    // @GetMapping("/listarSolicitacoesPorEmailServidor")
+    // public ResponseEntity<List<SolicitarEstagio>> listarSolicitacoesPorEmailServidor(@RequestHeader("Authorization") String token) {
+    //     String email = tokenService.getSubject(token.replace("Bearer ", ""));
+    //     var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+
+    //     if (servidor != null) {
+    //         var solicitacoesPorServidor = solicitacaoRepository.findByServidor(servidor);
+
+    //         if (solicitacoesPorServidor.isEmpty()) {
+    //             return ResponseEntity.noContent().build();
+    //         } else {
+    //             return ResponseEntity.ok(solicitacoesPorServidor);
+    //         }
+    //     } else {
+    //         return ResponseEntity.notFound().build();
+    //     }
+    // }
     
-
 }
