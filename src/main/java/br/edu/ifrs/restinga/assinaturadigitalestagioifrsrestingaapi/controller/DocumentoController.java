@@ -96,4 +96,26 @@ public class DocumentoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/listarDocumento/{solicitarEstagioId}")
+    @ResponseBody
+    public ResponseEntity<List<DocumentoDto>> listarDocumentosPorSolicitarEstagioId(@PathVariable("solicitarEstagioId") Long solicitarEstagioId) {
+        List<Documento> documentos = documentoRepository.findBySolicitarEstagioId(solicitarEstagioId);
+        List<DocumentoDto> documentosDto = new ArrayList<>();
+
+        for (Documento documento : documentos) {
+            DocumentoDto documentoDto = new DocumentoDto();
+            documentoDto.setId(documento.getId());
+            documentoDto.setNome(documento.getNome());
+            documentosDto.add(documentoDto);
+        }
+
+        if (!documentosDto.isEmpty()) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(documentosDto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

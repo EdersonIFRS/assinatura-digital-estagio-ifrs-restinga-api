@@ -108,6 +108,15 @@ public class AlunoController extends BaseController{
         aluno.desativar();
 
         return ResponseEntity.noContent().build();
-    } 
+    }
+
+    
+    @GetMapping("/buscarAlunoPorIdSolicitacao/{idSolicitacao}")
+    @ResponseBody
+    public ResponseEntity listarIdSolicitacao(@PathVariable long idSolicitacao){
+        var aluno =alunoRepository.findById(idSolicitacao);
+         
+        return ResponseEntity.ok(aluno);
+    }
 
 }

@@ -18,7 +18,14 @@ public record DadosCadastroSolicitacao(
         @Nullable
         String conteudo,
         @Nullable
-        String observacao
+        String observacao,
+
+        @Nullable
+        String status,
+        @Nullable
+        String etapa,
+        @Nullable
+        String resposta
 
 ) {
 }
