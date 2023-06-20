@@ -38,6 +38,7 @@ public class SecurityConfigurations {
                 .and().authorizeHttpRequests()
                 .requestMatchers(HttpMethod.POST,"/login").permitAll()
                 .requestMatchers(HttpMethod.POST,"/cadastrarAluno").permitAll()
+                .requestMatchers(HttpMethod.GET,"/listarVagas").permitAll()
                 .requestMatchers("/assinaturaapi/alunos/**").hasRole("ALUNO")
                 .requestMatchers("/assinaturaapi/servidores/**").hasRole("SERVIDOR")
                 .anyRequest().authenticated()
