@@ -36,17 +36,20 @@ public class SolicitarEstagio {
 
     private String etapa;
 
-    private String observacao;  
+    private String observacao;
 
-    public SolicitarEstagio(Aluno aluno, Servidor servidor, String tipo, String titulo, String conteudo, String observacao) {
+    private String resposta;
+
+    public SolicitarEstagio(Aluno aluno, Servidor servidor, String tipo, String titulo, String conteudo, String observacao, String status, String etapa, String resposta) {
         this.aluno = aluno;
         this.servidor = servidor;
         this.tipo = tipo;
         this.dataSolicitacao = LocalDateTime.now();
-        this.status = "em andamento";
+        this.status = status;
         this.titulo = titulo;
         this.conteudo = conteudo;
-        this.etapa = "1";
+        this.etapa = etapa;
         this.observacao = observacao;
+        this.resposta = resposta;
     }
 }
