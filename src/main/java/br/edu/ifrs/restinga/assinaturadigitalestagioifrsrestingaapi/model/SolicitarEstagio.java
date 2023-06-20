@@ -44,8 +44,8 @@ public class SolicitarEstagio {
         this.tipo = tipo;
         this.dataSolicitacao = LocalDateTime.now();
         this.status = "em andamento";
-        this.titulo = titulo;
-        this.conteudo = conteudo;
+        this.titulo = aluno.getNomeCompleto();
+        this.conteudo = "aqui vai ser o conteudo do "+dataSolicitacao;
         this.etapa = "1";
         this.observacao = observacao;
     }
