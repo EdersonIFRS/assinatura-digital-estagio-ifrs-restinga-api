@@ -88,10 +88,13 @@ public class AlunoController extends BaseController{
     }
 
     @GetMapping("/getAluno")
-    @Transactional
-    public ResponseEntity pegarAluno(@RequestParam long id){
-        if(alunoRepository.findById(id).isPresent()){
-            return ResponseEntity.ok(alunoRepository.findById(id));
+    public ResponseEntity pegarAluno(@RequestHeader("Authorization") String token){
+
+        String email = tokenService.getSubject(token.replace("Bearer ", ""));
+        Aluno aluno = alunoRepository.findByUsuarioSistemaEmail(email);
+
+        if(alunoRepository.findById(aluno.getId()).isPresent()){
+            return ResponseEntity.ok(alunoRepository.findById(aluno.getId()));
         }
         else{
             return ResponseEntity.notFound().build();
