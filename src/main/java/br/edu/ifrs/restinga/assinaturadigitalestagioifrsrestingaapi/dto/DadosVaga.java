@@ -10,6 +10,8 @@ public record DadosVaga (
         @NotNull
          String titulo,
         @NotNull
+         String empresa,
+        @NotNull
          String agencia,
         @NotNull
          String descricao,
@@ -17,10 +19,10 @@ public record DadosVaga (
          String local,
         String valor,
         @NotNull
-        String turno
+        String turno   
 ){
 
     public DadosVaga(Vaga vaga) {
-       this(vaga.getId(), vaga.getTitulo(), vaga.getAgencia(), vaga.getDescricao(), vaga.getLocal(), vaga.getValor(), vaga.getTurno());
+       this(vaga.getId(), vaga.getTitulo(), vaga.getEmpresa(), vaga.getAgencia(), vaga.getDescricao(), vaga.getLocal(), vaga.getValor(), vaga.getTurno());
     }
 }

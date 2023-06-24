@@ -16,8 +16,9 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
         @Transactional
         @PostMapping("/cadastrarVaga")
-        public ResponseEntity criarVaga(@RequestBody @Valid DadosVaga Dvaga){
-            Vaga vaga = new Vaga(Dvaga.titulo(),Dvaga.agencia(), Dvaga.descricao(), Dvaga.local(), Dvaga.valor(),Dvaga.local());
+        public ResponseEntity criarVaga(@RequestBody @Valid DadosVaga Dvaga, @RequestHeader("Authorization") String token){
+            System.out.println(Dvaga);
+            Vaga vaga = new Vaga(Dvaga.titulo(),Dvaga.empresa(),Dvaga.agencia(), Dvaga.descricao(), Dvaga.local(), Dvaga.valor(),Dvaga.turno());
             vagaRepository.save(vaga);
             return ResponseEntity.ok().build();
         }

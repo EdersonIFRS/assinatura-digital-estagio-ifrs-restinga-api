@@ -24,6 +24,8 @@ public class Vaga {
     @NotNull
     private String agencia;
     @NotNull
+    private String empresa;
+    @NotNull
     private String descricao;
     @NotNull
     private String local;
@@ -33,8 +35,9 @@ public class Vaga {
     private String turno;
 
 
-    public Vaga(String titulo, String agencia, String descricao, String local, String valor, String turno) {
+    public Vaga(String titulo,String empresa, String agencia, String descricao, String local, String valor, String turno) {
         this.titulo = titulo;
+        this.empresa = empresa;
         this.agencia = agencia;
         this.descricao = descricao;
         this.local = local;
