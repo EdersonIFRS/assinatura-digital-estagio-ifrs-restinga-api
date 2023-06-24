@@ -18,3 +18,20 @@ WHERE NOT EXISTS (
   WHERE curso.id = dados.id
     AND curso.nome_curso = dados.nome_curso
 );
+
+
+INSERT INTO roles (id,name)
+SELECT dados.id, dados.name
+FROM (
+         SELECT '1' AS id, 'ROLE_ALUNO' AS name
+         UNION ALL
+         SELECT '2', 'ROLE_SERVIDOR'
+         UNION ALL
+         SELECT '3', 'ROLE_SESTAGIO'
+     ) AS dados
+WHERE NOT EXISTS (
+        SELECT 1
+        FROM roles
+        WHERE roles.id = dados.id
+          AND roles.name = dados.name
+    );

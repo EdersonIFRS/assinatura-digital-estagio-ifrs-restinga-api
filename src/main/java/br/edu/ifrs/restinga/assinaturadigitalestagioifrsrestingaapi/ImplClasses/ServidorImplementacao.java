@@ -1,5 +1,6 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,8 @@ public class ServidorImplementacao extends BaseController {
 	@PersistenceContext	
 	EntityManager manager;
 
+	String[] cargo = {"Coordenador","Setor de Estágio"};
+
 
 
 	public Servidor findId(long id) {
@@ -39,7 +42,14 @@ public class ServidorImplementacao extends BaseController {
 
 	@Transactional
 	public ResponseEntity salvar(DadosCadastroServidor dadosCadastroServidor, Curso curso, UriComponentsBuilder uriBuilder) {
-		Optional<Role> role = roleRepository.findById(2L);
+
+		Optional<Role> role = null;
+		if(dadosCadastroServidor.cargo().equals(cargo[0].toString())){
+			role = roleRepository.findById(2L);
+		}else if(dadosCadastroServidor.cargo().equals(cargo[1].toString())) {
+			role = roleRepository.findById(3L);
+		}
+
 
 		var servidor = new Servidor(dadosCadastroServidor, curso,role.get());
 
