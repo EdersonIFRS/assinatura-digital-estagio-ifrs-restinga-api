@@ -6,16 +6,15 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtu
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoServidor;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.SolicitarEstagio;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +38,13 @@ public class SolicitacaoController extends BaseController{
         System.out.println("Dados slt: " + dados.status());
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
 
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em Andamento", dados.etapa(), "");
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em Andamento", "2", "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
 
         solicitacaoRepository.save(solicitarEstagio);
+        var historico = new HistoricoSolicitacao(solicitarEstagio.getId(), solicitarEstagio.getAluno().getUsuarioSistema().getEmail());
+        historicoSolicitacaoRepository.save(historico);
+
         return ResponseEntity.ok().build();
     }
     else{
@@ -137,8 +139,12 @@ public class SolicitacaoController extends BaseController{
     @Transactional
     public ResponseEntity deferirSolicitacao(@PathVariable("id") Long id,
                                                        @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
-                                                       @RequestParam("file") List<MultipartFile> files) {
+                                                       @RequestParam("file") List<MultipartFile> files,
+                                                       @RequestHeader("Authorization") String token) {
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+
+        var email = tokenService.getSubject(token.replace("Bearer ", ""));
+        var usuario =(Usuario) usuarioRepository.findByEmail(email);
 
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
@@ -159,7 +165,17 @@ public class SolicitacaoController extends BaseController{
                 fileImp.SaveDocBlob(files, solicitacao);
             }
 
+            if(usuario.getRoles().getId().equals(1L)){
+                solicitacao.setEtapa("2");
+            }else if(usuario.getRoles().getId().equals(2L)){
+                solicitacao.setEtapa("4");
+            }else if(usuario.getRoles().getId().equals(3L)){
+                solicitacao.setEtapa("3");
+            }
+
             solicitacaoRepository.save(solicitacao);
+            var historico = new HistoricoSolicitacao(solicitacao.getId(), solicitacao.getServidor().getUsuarioSistema().getEmail());
+            historicoSolicitacaoRepository.save(historico);
             return ResponseEntity.ok().build();
         }
             return ResponseEntity.notFound().build();

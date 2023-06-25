@@ -39,4 +39,8 @@ public class BaseController {
     @Autowired
     public RoleRepository roleRepository;
 
+    @Autowired
+    public HistoricoSolicitacaoRepository historicoSolicitacaoRepository;
+
+
 }
