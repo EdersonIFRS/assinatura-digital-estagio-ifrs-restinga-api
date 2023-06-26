@@ -42,7 +42,7 @@ public class SolicitacaoController extends BaseController{
         fileImp.SaveDocBlob(file,solicitarEstagio);
 
         solicitacaoRepository.save(solicitarEstagio);
-        var historico = new HistoricoSolicitacao(solicitarEstagio.getId(), solicitarEstagio.getAluno().getUsuarioSistema().getEmail());
+        var historico = new HistoricoSolicitacao(solicitarEstagio.getId(), solicitarEstagio.getAluno().getUsuarioSistema().getEmail(),1);
         historicoSolicitacaoRepository.save(historico);
 
         return ResponseEntity.ok().build();
@@ -164,17 +164,20 @@ public class SolicitacaoController extends BaseController{
 
                 fileImp.SaveDocBlob(files, solicitacao);
             }
-
+            var etapa = 0;
             if(usuario.getRoles().getId().equals(1L)){
                 solicitacao.setEtapa("2");
+                etapa = 1;
             }else if(usuario.getRoles().getId().equals(2L)){
                 solicitacao.setEtapa("4");
+                etapa = 3;
             }else if(usuario.getRoles().getId().equals(3L)){
                 solicitacao.setEtapa("3");
+                etapa = 2;
             }
 
             solicitacaoRepository.save(solicitacao);
-            var historico = new HistoricoSolicitacao(solicitacao.getId(), solicitacao.getServidor().getUsuarioSistema().getEmail());
+            var historico = new HistoricoSolicitacao(solicitacao.getId(), solicitacao.getServidor().getUsuarioSistema().getEmail(),etapa);
             historicoSolicitacaoRepository.save(historico);
             return ResponseEntity.ok().build();
         }
