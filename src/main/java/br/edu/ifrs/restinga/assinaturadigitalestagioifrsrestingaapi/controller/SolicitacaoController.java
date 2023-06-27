@@ -165,6 +165,33 @@ public class SolicitacaoController extends BaseController{
             return ResponseEntity.notFound().build();
 
     }
+
+
+    @PutMapping("/deferirSolicitacaoSetorEstagio/{id}")
+    @Transactional
+    public ResponseEntity deferirSolicitacaoSetorEstagio(@PathVariable("id") Long id,
+                                             @RequestPart("dados") DadosAtualizacaoSolicitacao dados){
+        Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+
+        if (solicitacaoOptional.isPresent()) {
+            SolicitarEstagio solicitacao = solicitacaoOptional.get();
+
+
+            if (dados.status() != null) {
+                solicitacao.setStatus(dados.status());
+            }
+
+
+            if (dados.etapa() != null) {
+                solicitacao.setEtapa(dados.etapa());
+            }
+
+            solicitacaoRepository.save(solicitacao);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+
+    }
     @PutMapping("/indeferirSolicitacao/{id}")
     @Transactional
     public ResponseEntity indeferirSolicitacao(@PathVariable("id") Long id,
