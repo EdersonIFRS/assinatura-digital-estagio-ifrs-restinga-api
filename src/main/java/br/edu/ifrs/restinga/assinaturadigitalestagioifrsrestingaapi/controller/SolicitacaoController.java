@@ -39,7 +39,7 @@ public class SolicitacaoController extends BaseController{
         System.out.println("Dados slt: " + dados.status());
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
 
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em Andamento", dados.etapa(), "");
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "em andamento", dados.etapa(), "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
 
         solicitacaoRepository.save(solicitarEstagio);
@@ -137,8 +137,18 @@ public class SolicitacaoController extends BaseController{
     @Transactional
     public ResponseEntity deferirSolicitacao(@PathVariable("id") Long id,
                                                        @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
-                                                       @RequestParam("file") List<MultipartFile> files) {
+                                                       @RequestParam("file") List<MultipartFile> files,
+                                                       @RequestHeader("Authorization") String token) {
+
+            String email = tokenService.getSubject(token.replace("Bearer ", ""));
+            Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+
+
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+
+        if(servidor.getRole().getId().equals(3)){
+           System.out.println("esta chagando os dados");
+        }
 
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
