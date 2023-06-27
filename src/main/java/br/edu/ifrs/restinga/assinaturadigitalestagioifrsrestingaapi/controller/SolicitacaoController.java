@@ -39,7 +39,7 @@ public class SolicitacaoController extends BaseController{
         System.out.println("Dados slt: " + dados.status());
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
 
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "em andamento", dados.etapa(), "");
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "em andamento", "1", "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
 
         solicitacaoRepository.save(solicitarEstagio);
@@ -106,10 +106,10 @@ public class SolicitacaoController extends BaseController{
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
         List<SolicitarEstagio> solicitacoes;
-        if(servidor.getCargo() != "Coordenador"){
-           solicitacoes = solicitacaoRepository.findAll();
+        if(servidor.getCargo().equals("Coordenador")){
+           solicitacoes = solicitacaoRepository.findByServidor(servidor);
         }else {
-            solicitacoes = solicitacaoRepository.findByServidor(servidor);
+            solicitacoes = solicitacaoRepository.findAll();
         }
         List<DadosListagemSolicitacaoServidor> dadosSolicitacoes = solicitacoes.stream().map(DadosListagemSolicitacaoServidor::new).toList();
         
@@ -149,7 +149,7 @@ public class SolicitacaoController extends BaseController{
 
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
 
-        if(servidor.getRole().getId().equals(3)){
+        if(servidor.getRole().getId().equals(2)){
            System.out.println("esta chagando os dados");
         }
 
@@ -162,9 +162,7 @@ public class SolicitacaoController extends BaseController{
             }
 
 
-            if (dados.etapa() != null) {
-                solicitacao.setEtapa(dados.etapa());
-            }
+            solicitacao.setEtapa("3");
 
 
             if (!files.isEmpty()) {
@@ -183,8 +181,17 @@ public class SolicitacaoController extends BaseController{
     @PutMapping("/deferirSolicitacaoSetorEstagio/{id}")
     @Transactional
     public ResponseEntity deferirSolicitacaoSetorEstagio(@PathVariable("id") Long id,
-                                             @RequestPart("dados") DadosAtualizacaoSolicitacao dados){
+                                             @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
+                                             @RequestHeader("Authorization") String token){
+        String email = tokenService.getSubject(token.replace("Bearer ", ""));
+        Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+
+
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+
+        if(servidor.getRole().getId().equals(3)){
+            System.out.println("esta chagando os dados");
+        }
 
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
@@ -195,9 +202,7 @@ public class SolicitacaoController extends BaseController{
             }
 
 
-            if (dados.etapa() != null) {
-                solicitacao.setEtapa(dados.etapa());
-            }
+            solicitacao.setEtapa("3");
 
             solicitacaoRepository.save(solicitacao);
             return ResponseEntity.ok().build();
@@ -208,16 +213,24 @@ public class SolicitacaoController extends BaseController{
     @PutMapping("/indeferirSolicitacao/{id}")
     @Transactional
     public ResponseEntity indeferirSolicitacao(@PathVariable("id") Long id,
-                                                          @RequestBody DadosAtualizacaoSolicitacao dados) {
+                                                          @RequestPart DadosAtualizacaoSolicitacao dados,
+                                                          @RequestHeader("Authorization") String token){
+        String email = tokenService.getSubject(token.replace("Bearer ", ""));
+        Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+
+
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+
+        if(servidor.getRole().getId().equals(2)){
+            System.out.println("esta chagando os dados");
+        }
+
 
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
 
 
-            if (dados.etapa() != null) {
-                solicitacao.setEtapa(dados.etapa());
-            }
+            solicitacao.setEtapa("6");
 
 
             if (dados.status() != null) {
