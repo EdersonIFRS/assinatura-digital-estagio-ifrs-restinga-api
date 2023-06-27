@@ -105,9 +105,12 @@ public class SolicitacaoController extends BaseController{
     public ResponseEntity<List<DadosListagemSolicitacaoServidor>> listarSolicitacoesPorEmailServidor(@RequestHeader("Authorization") String token) {
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
-
-        List<SolicitarEstagio> solicitacoes = solicitacaoRepository.findByServidor(servidor);
-
+        List<SolicitarEstagio> solicitacoes;
+        if(servidor.getCargo() != "Coordenador"){
+           solicitacoes = solicitacaoRepository.findAll();
+        }else {
+            solicitacoes = solicitacaoRepository.findByServidor(servidor);
+        }
         List<DadosListagemSolicitacaoServidor> dadosSolicitacoes = solicitacoes.stream().map(DadosListagemSolicitacaoServidor::new).toList();
         
         return ResponseEntity.ok(dadosSolicitacoes);
