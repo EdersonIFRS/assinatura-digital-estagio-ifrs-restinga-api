@@ -28,6 +28,7 @@ public class SolicitarEstagio {
 
     @OneToOne Servidor servidor;
 
+    @Column(columnDefinition = "DATETIME")
     private LocalDateTime dataSolicitacao;
 
     private String titulo;

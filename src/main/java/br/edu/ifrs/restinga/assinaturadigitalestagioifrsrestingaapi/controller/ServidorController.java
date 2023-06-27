@@ -41,7 +41,7 @@ public class ServidorController extends BaseController {
         if (curso.isEmpty()) {
             return servidorImplementacao.salvar(dadosCadastroServidor, null, uriBuilder);
         }
-        if (servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId())) {
+        if (servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId()) && dadosCadastroServidor.curso() != 15) {
             // Servido já cadastrado para o curso.
             return ResponseEntity.badRequest().build();
         }
