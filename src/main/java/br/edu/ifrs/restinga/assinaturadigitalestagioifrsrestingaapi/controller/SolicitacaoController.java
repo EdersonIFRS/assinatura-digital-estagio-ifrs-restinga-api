@@ -107,7 +107,7 @@ public class SolicitacaoController extends BaseController{
         var servidor = servidorRepository.findByUsuarioSistemaEmail(email);
         List<SolicitarEstagio> solicitacoes;
         if(servidor.getCargo().equals("Coordenador")){
-           solicitacoes = solicitacaoRepository.findByServidor(servidor);
+           solicitacoes = solicitacaoRepository.findByServidorAndEtapaIsGreaterThanEqual(servidor, "2");
         }else {
             solicitacoes = solicitacaoRepository.findAll();
         }
@@ -142,39 +142,26 @@ public class SolicitacaoController extends BaseController{
                                                        @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
                                                        @RequestParam("file") List<MultipartFile> files,
                                                        @RequestHeader("Authorization") String token) {
-
-            String email = tokenService.getSubject(token.replace("Bearer ", ""));
-            Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
-
-
+        String email = tokenService.getSubject(token.replace("Bearer ", ""));
+        Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
 
         if(servidor.getRole().getId().equals(2)){
            System.out.println("esta chagando os dados");
         }
-
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
-
-
             if (dados.status() != null) {
                 solicitacao.setStatus(dados.status());
             }
-
-
             solicitacao.setEtapa("3");
-
-
             if (!files.isEmpty()) {
-
                 fileImp.SaveDocBlob(files, solicitacao);
             }
-
             solicitacaoRepository.save(solicitacao);
             return ResponseEntity.ok().build();
         }
             return ResponseEntity.notFound().build();
-
     }
 
 
@@ -183,33 +170,26 @@ public class SolicitacaoController extends BaseController{
     public ResponseEntity deferirSolicitacaoSetorEstagio(@PathVariable("id") Long id,
                                              @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
                                              @RequestHeader("Authorization") String token){
+
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
-
-
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
 
         if(servidor.getRole().getId().equals(3)){
             System.out.println("esta chagando os dados");
         }
-
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
-
-
             if (dados.status() != null) {
                 solicitacao.setStatus(dados.status());
             }
-
-
             solicitacao.setEtapa("3");
-
             solicitacaoRepository.save(solicitacao);
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
-
     }
+
     @PutMapping("/indeferirSolicitacao/{id}")
     @Transactional
     public ResponseEntity indeferirSolicitacao(@PathVariable("id") Long id,

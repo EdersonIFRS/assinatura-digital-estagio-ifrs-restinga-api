@@ -54,7 +54,7 @@ public class ServidorImplementacao extends BaseController {
 		var servidor = new Servidor(dadosCadastroServidor, curso,role.get());
 
 		if(usuarioRepository.findByEmail(dadosCadastroServidor.usuarioSistema().getEmail())!= null){
-			return TratadorDeErros.tratarErro409();
+			return TratadorDeErros.tratarErro409("email");
 		}
 
 

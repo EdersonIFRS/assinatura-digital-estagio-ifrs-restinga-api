@@ -13,4 +13,6 @@ import org.springframework.stereotype.Repository;
 public interface SolicitacaoRepository  extends JpaRepository<SolicitarEstagio,Long> {
     List<SolicitarEstagio> findByAluno(Aluno aluno);
     List<SolicitarEstagio> findByServidor(Servidor servidor);
+
+    List<SolicitarEstagio> findByServidorAndEtapaIsGreaterThanEqual(Servidor servidor, String etapa);
 }

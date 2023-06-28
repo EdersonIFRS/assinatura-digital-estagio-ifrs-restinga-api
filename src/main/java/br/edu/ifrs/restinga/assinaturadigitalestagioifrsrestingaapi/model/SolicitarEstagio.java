@@ -19,7 +19,7 @@ public class SolicitarEstagio {
     private long id;
     private String tipo;
 
-    @OneToMany(mappedBy = "solicitarEstagio", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "solicitarEstagio", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Documento> documento = new ArrayList<>();
     @OneToOne
     private Aluno aluno;

@@ -4,6 +4,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.CursoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadoUpdateServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroServidor;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.error.TratadorDeErros;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.infra.security.TokenService;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Curso;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
@@ -42,8 +43,8 @@ public class ServidorController extends BaseController {
             return servidorImplementacao.salvar(dadosCadastroServidor, null, uriBuilder);
         }
         if (servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId()) && dadosCadastroServidor.curso() != 15) {
-            // Servido já cadastrado para o curso.
-            return ResponseEntity.badRequest().build();
+            System.out.println("Passou aqui");
+            return TratadorDeErros.tratarErro409("curso");
         }
         return servidorImplementacao.salvar(dadosCadastroServidor, curso.get(), uriBuilder);
 

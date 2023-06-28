@@ -37,9 +37,19 @@ public class TratadorDeErros {
     }
 
     @ExceptionHandler(HttpClientErrorException.Conflict.class)
-    public static ResponseEntity tratarErro409(){
-        return ResponseEntity.status(HttpStatus.CONFLICT).body("O email informado já está cadastrado");
+    public static ResponseEntity tratarErro409(String conflito){
+        if(conflito.equals("email")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("O email informado já está cadastrado");
+        }
+        else if(conflito.equals("curso")) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Já possui um servidor para esse curso!!!");
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Houve algum conflito no banco de dados, tente novamente.");
+        }
     }
+
+
 
     private record DadosErrorValidacao(String campo,String mensagem){
          public DadosErrorValidacao(FieldError erro){

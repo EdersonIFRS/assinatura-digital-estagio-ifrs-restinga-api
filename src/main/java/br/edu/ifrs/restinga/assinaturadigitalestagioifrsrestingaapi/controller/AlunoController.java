@@ -40,7 +40,7 @@ public class AlunoController extends BaseController{
         var aluno = new Aluno(dados,curso.get(),role.get());
 
         if(usuarioRepository.findByEmail(dados.usuarioSistema().getEmail())!= null){
-            return TratadorDeErros.tratarErro409();
+            return TratadorDeErros.tratarErro409("email");
         }
 
         if (!emailValidator.validaEmail(aluno.getUsuarioSistema().getEmail())) {
