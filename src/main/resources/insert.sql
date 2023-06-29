@@ -11,6 +11,8 @@ FROM (
   SELECT '13', 'Gestão Desportiva e de Lazer'
   UNION ALL
   SELECT '14', 'Processos Gerenciais'
+  UNION ALL
+  SELECT '15', 'Setor Estágio'
 ) AS dados
 WHERE NOT EXISTS (
   SELECT 1
