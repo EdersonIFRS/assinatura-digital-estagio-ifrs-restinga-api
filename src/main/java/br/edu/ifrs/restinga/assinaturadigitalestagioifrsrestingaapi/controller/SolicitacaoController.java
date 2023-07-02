@@ -12,6 +12,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servid
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.SolicitarEstagio;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -190,22 +191,20 @@ public class SolicitacaoController extends BaseController{
         return ResponseEntity.notFound().build();
     }
 
-    @PutMapping("/indeferirSolicitacao/{id}")
+
+    @PostMapping("/indeferirSolicitacao")
     @Transactional
-    public ResponseEntity indeferirSolicitacao(@PathVariable("id") Long id,
-                                                          @RequestPart DadosAtualizacaoSolicitacao dados,
+    public ResponseEntity indeferirSolicitacao1(           @RequestBody DadosAtualizacaoSolicitacao Solicitar,
                                                           @RequestHeader("Authorization") String token){
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
-
-
-        Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+        System.out.println("ID:" + Solicitar.id());
+        System.out.println("DADOS: " + Solicitar.status());
+        Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById( Solicitar.id());
 
         if(servidor.getRole().getId().equals(2)){
-            System.out.println("esta chagando os dados");
+
         }
-
-
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
 
@@ -213,13 +212,13 @@ public class SolicitacaoController extends BaseController{
             solicitacao.setEtapa("6");
 
 
-            if (dados.status() != null) {
-                solicitacao.setStatus(dados.status());
+            if (Solicitar.status() != null) {
+                solicitacao.setStatus(Solicitar.status());
             }
 
 
-            if (dados.resposta() != null) {
-                solicitacao.setResposta(dados.resposta());
+            if (Solicitar.resposta() != null) {
+                solicitacao.setResposta(Solicitar.resposta());
             }
 
             solicitacaoRepository.save(solicitacao);

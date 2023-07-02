@@ -17,7 +17,7 @@ public class Documento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
+    @ManyToOne
     private SolicitarEstagio solicitarEstagio;
     @Column
     private String nome;
