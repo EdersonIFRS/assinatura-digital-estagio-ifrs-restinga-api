@@ -26,6 +26,10 @@ public class SolicitarEstagio {
 
     private String status;
 
+    private String statusEtapaCoordenador;
+
+    private String statusSetorEstagio;
+
     @OneToOne Servidor servidor;
 
     @Column(columnDefinition = "DATETIME")
@@ -41,7 +45,7 @@ public class SolicitarEstagio {
 
     private String resposta;
 
-    public SolicitarEstagio(Aluno aluno, Servidor servidor, String tipo, String titulo, String conteudo, String observacao, String status, String etapa, String resposta) {
+    public SolicitarEstagio(Aluno aluno, Servidor servidor, String tipo, String titulo, String conteudo, String observacao, String status, String etapa, String resposta, String statusEtapaCoordenador, String statusSetorEstagio) {
         this.aluno = aluno;
         this.servidor = servidor;
         this.tipo = tipo;
@@ -52,5 +56,7 @@ public class SolicitarEstagio {
         this.titulo = aluno.getNomeCompleto();
         this.observacao = observacao;
         this.resposta = resposta;
+        this.statusEtapaCoordenador = statusEtapaCoordenador;
+        this.statusSetorEstagio = statusSetorEstagio;
     }
 }

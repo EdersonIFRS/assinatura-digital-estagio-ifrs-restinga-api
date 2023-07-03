@@ -30,6 +30,8 @@ FROM (
          SELECT '2', 'ROLE_SERVIDOR'
          UNION ALL
          SELECT '3', 'ROLE_SESTAGIO'
+         UNION ALL
+         SELECT '4', 'ROLE_DIRETOR'
      ) AS dados
 WHERE NOT EXISTS (
         SELECT 1

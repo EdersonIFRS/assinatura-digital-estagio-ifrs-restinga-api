@@ -10,7 +10,12 @@ public record DadosAtualizacaoSolicitacao   (
         String etapa,
 
         @NotBlank
-        String resposta
+        String statusEtapaSetorEstagio,
+        @NotBlank
+        String statusEtapaCoordenador,
+
+        @NotBlank
+        String observacao
         )
 {
 
