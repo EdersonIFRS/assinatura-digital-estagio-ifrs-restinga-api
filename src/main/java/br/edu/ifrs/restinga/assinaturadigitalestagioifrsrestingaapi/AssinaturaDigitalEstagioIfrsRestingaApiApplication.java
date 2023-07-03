@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class AssinaturaDigitalEstagioIfrsRestingaApiApplication {
 
+	HistoricoSolicitacao historico;
 	public static void main(String[] args) {
 		SpringApplication.run(AssinaturaDigitalEstagioIfrsRestingaApiApplication.class, args);
 	}
