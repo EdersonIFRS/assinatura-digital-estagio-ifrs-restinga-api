@@ -31,6 +31,12 @@ public class SolicitarEstagio {
 
     private String status;
 
+    private String statusEtapaCoordenador;
+
+    private String statusSetorEstagio;
+
+    private String statusEtapaDiretor;
+
     @OneToOne Servidor servidor;
 
     @OneToMany(mappedBy = "solicitarEstagio", cascade = CascadeType.REMOVE, orphanRemoval = true)
@@ -50,7 +56,7 @@ public class SolicitarEstagio {
 
     private String resposta;
 
-    public SolicitarEstagio(Aluno aluno, Servidor servidor, String tipo, String titulo, String conteudo, String observacao, String status, String etapa, String resposta) {
+    public SolicitarEstagio(Aluno aluno, Servidor servidor, String tipo, String titulo, String conteudo, String observacao, String status, String etapa, String resposta, String statusEtapaCoordenador, String statusSetorEstagio, String statusEtapaDiretor) {
         this.aluno = aluno;
         this.servidor = servidor;
         this.tipo = tipo;
@@ -61,5 +67,8 @@ public class SolicitarEstagio {
         this.titulo = aluno.getNomeCompleto();
         this.observacao = observacao;
         this.resposta = resposta;
+        this.statusEtapaCoordenador = statusEtapaCoordenador;
+        this.statusSetorEstagio = statusSetorEstagio;
+        this.statusEtapaDiretor = statusEtapaDiretor;
     }
 }
