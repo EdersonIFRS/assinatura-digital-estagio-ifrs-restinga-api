@@ -25,7 +25,7 @@ public record DadosCadastroSolicitacao(
         @Nullable
         String etapa,
         @Nullable
-        String resposta
+        String respostas
 
 ) {
 }

@@ -1,7 +1,6 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.FileImp;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.ServidorRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtualizacaoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoAluno;
@@ -10,8 +9,8 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.SolicitarEstagio;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,7 +39,7 @@ public class SolicitacaoController extends BaseController{
         System.out.println("Dados slt: " + dados.status());
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
 
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em andamento", "1", "", "", "Em andamento");
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em andamento", "1", "", "", "Em andamento", "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
 
         solicitacaoRepository.save(solicitarEstagio);
@@ -126,6 +125,29 @@ public class SolicitacaoController extends BaseController{
             return ResponseEntity.notFound().build();
         }
     }
+    @GetMapping("/solicitacao/{id}")
+    public ResponseEntity<DadosAtualizacaoSolicitacao> getSolicitacaoById(@PathVariable("id") Long id) {
+        Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+        if (solicitacaoOptional.isPresent()) {
+            SolicitarEstagio solicitacao = solicitacaoOptional.get();
+
+            DadosAtualizacaoSolicitacao solicitacaoDTO = new DadosAtualizacaoSolicitacao(solicitacao.getStatus(), solicitacao.getEtapa(), solicitacao.getStatusSetorEstagio(),
+                    solicitacao.getStatusEtapaCoordenador(), solicitacao.getStatusEtapaDiretor(), solicitacao.getObservacao());
+
+            solicitacaoDTO.statusEtapaDiretor();
+            solicitacaoDTO.statusEtapaCoordenador();
+            solicitacaoDTO.etapa();
+            solicitacaoDTO.statusEtapaSetorEstagio();
+            solicitacaoDTO.observacao();
+            solicitacaoDTO.status();
+
+            return ResponseEntity.ok(solicitacaoDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
     @GetMapping("/documentosSolicitacao/{id}")
     public ResponseEntity<List<Documento>> getDocumentosSolicitacao(@PathVariable("id") Long id) {
@@ -153,35 +175,48 @@ public class SolicitacaoController extends BaseController{
 
         SolicitarEstagio solicitacao = solicitacaoOptional.get();
 
-        // se estiver na etapa 1 e não for role 3
-        if (solicitacao.getEtapa().equals("1") && !( servidor.getRole().getId() == 2))  {
+
+        if (solicitacao.getStatus().equals("INDEFERIDO")) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Não é possível deferir uma solicitação indeferida.");
+        }
+
+        if(solicitacao.getEtapa().equals("5")){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Está solicitação já foi concluida como deferida ela não pode mais ser deferida.");
+        }
+
+        // se estiver na etapa 1 e não for role 3  role 3 = setor
+        if (solicitacao.getEtapa().equals("1") && !( servidor.getRole().getId() == 3))  {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Apenas o setor de estágios pode deferir uma solicitação na etapa 1.");
         }
 
-        // se estiver na etapa 2 e não for role 2
-        if (solicitacao.getEtapa().equals("2") && !(servidor.getRole().getId() == 2)) {
+        // se estiver na etapa 2 e não for role 2 role 2  = coordenador
+        if (solicitacao.getEtapa().equals("3") && !(servidor.getRole().getId() == 2)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Apenas o coordenador pode deferir uma solicitação na etapa 2.");
         }
 
-       // se estiver na etapa 3 e não for role 4
-        if (solicitacao.getEtapa().equals("3") && !( servidor.getRole().getId() == 2 )) {
+       // se estiver na etapa 3 e não for role 4 role 4  = diretor
+        if (solicitacao.getEtapa().equals("4") && !( servidor.getRole().getId() == 4 )) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Apenas o diretor pode deferir uma solicitação na etapa 3.");
         }
 
         if (servidor.getRole().getId() == 3) {
             solicitacao.setStatusSetorEstagio(dados.statusEtapaSetorEstagio()); // status setor estagio
-            solicitacao.setEtapa("3");
+            solicitacao.setEtapa("2");
+            solicitacao.setStatusEtapaCoordenador("Em andamento");
         }
 
         if (servidor.getRole().getId() == 2) {
             solicitacao.setStatusEtapaCoordenador(dados.statusEtapaCoordenador()); // status coordenador
             solicitacao.setEtapa("4");
+            solicitacao.setStatusEtapaDiretor("Em andamento");
         }
 
         if (servidor.getRole().getId() == 4) {
             solicitacao.setEtapa("5"); // Diretor
+            solicitacao.setStatusEtapaDiretor(dados.statusEtapaDiretor()); // definir status
             solicitacao.setStatus(dados.status()); // Definir o status como "DEFERIDO"
         }
+
 
         if (files != null && !files.isEmpty()) {
             fileImp.SaveDocBlob(files, solicitacao);
@@ -205,14 +240,22 @@ public class SolicitacaoController extends BaseController{
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Apenas pessoas do setor de estágios, diretores ou coordenadores podem indeferir uma solicitação.");
         }
 
+
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
 
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
 
-            solicitacao.setEtapa("6");
+            if(solicitacao.getEtapa().equals("5")){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Está solicitação já foi concluida como deferida ela não pode mais ser indeferida.");
+            }
+
+            solicitacao.setEtapa("5");
 
             solicitacao.setStatus("INDEFERIDO");
+            solicitacao.setStatusEtapaDiretor("INDEFERIDO");
+            solicitacao.setStatusEtapaCoordenador("INDEFERIDO");
+            solicitacao.setStatusEtapaDiretor("INDEFERIDO");
 
             if (dados.observacao() != null) {
                 solicitacao.setObservacao(dados.observacao());

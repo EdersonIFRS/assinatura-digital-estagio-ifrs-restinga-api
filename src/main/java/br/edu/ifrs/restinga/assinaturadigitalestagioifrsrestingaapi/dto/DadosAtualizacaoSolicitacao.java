@@ -15,6 +15,9 @@ public record DadosAtualizacaoSolicitacao   (
         String statusEtapaCoordenador,
 
         @NotBlank
+        String statusEtapaDiretor,
+
+        @NotBlank
         String observacao
         )
 {
