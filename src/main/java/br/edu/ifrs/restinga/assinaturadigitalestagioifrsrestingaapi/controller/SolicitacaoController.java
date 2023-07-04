@@ -1,19 +1,17 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.HistoricoSolicitacao;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.HistoricoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.FileImp;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.HistoricoSolicitacaoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtualizacaoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoAluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
-import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Historico;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.SolicitarEstagio;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,7 +47,7 @@ public class SolicitacaoController extends BaseController{
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
 
 
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em andamento", "1", "", "", "Em andamento", "");
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em andamento", "2", "", "", "Em andamento", "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
         solicitacaoRepository.save(solicitarEstagio);
         historicoSolicitacao.mudarSolicitacao(solicitarEstagio);
@@ -129,7 +127,11 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
         List<SolicitarEstagio> solicitacoes;
         if(servidor.getCargo().equals("Coordenador")){
            solicitacoes = solicitacaoRepository.findByServidorAndEtapaIsGreaterThanEqual(servidor, "2");
-        }else {
+        }
+        else if(servidor.getRole().equals("Diretor")){
+            solicitacoes = solicitacaoRepository.findByServidorAndEtapaIsGreaterThanEqual(servidor, "4");
+        }
+        else {
             solicitacoes = solicitacaoRepository.findAll();
         }
 
@@ -153,7 +155,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
         if (solicitacaoOptional.isPresent()) {
             SolicitarEstagio solicitacao = solicitacaoOptional.get();
 
-            DadosAtualizacaoSolicitacao solicitacaoDTO = new DadosAtualizacaoSolicitacao(solicitacao.getStatus(), solicitacao.getEtapa(), solicitacao.getStatusSetorEstagio(),
+            DadosAtualizacaoSolicitacao solicitacaoDTO = new DadosAtualizacaoSolicitacao(solicitacao.getId(),solicitacao.getStatus(), solicitacao.getEtapa(), solicitacao.getStatusSetorEstagio(),
                     solicitacao.getStatusEtapaCoordenador(), solicitacao.getStatusEtapaDiretor(), solicitacao.getObservacao());
 
             solicitacaoDTO.statusEtapaDiretor();
@@ -210,7 +212,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
         }
 
         // se estiver na etapa 1 e não for role 3  role 3 = setor
-        if (solicitacao.getEtapa().equals("1") && !( servidor.getRole().getId() == 3))  {
+        if (solicitacao.getEtapa().equals("2") && !( servidor.getRole().getId() == 3))  {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Apenas o setor de estágios pode deferir uma solicitação na etapa 1.");
         }
 
@@ -226,7 +228,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
 
         if (servidor.getRole().getId() == 3) {
             solicitacao.setStatusSetorEstagio(dados.statusEtapaSetorEstagio()); // status setor estagio
-            solicitacao.setEtapa("2");
+            solicitacao.setEtapa("3");
             solicitacao.setStatusEtapaCoordenador("Em andamento");
         }
 
@@ -248,6 +250,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
         }
 
         solicitacaoRepository.save(solicitacao);
+        //historicoSolicitacao.mudarSolicitacao(solicitacao);
         return ResponseEntity.ok().build();
     }
 
@@ -288,7 +291,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
             }
 
             solicitacaoRepository.save(solicitacao);
-            historicoSolicitacao.mudarSolicitacao(solicitacao);
+            //historicoSolicitacao.mudarSolicitacao(solicitacao);
             return ResponseEntity.ok().build();
         }
 

@@ -1,4 +1,4 @@
-package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi;
+package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses;
 
 import java.time.LocalDateTime;
 
@@ -19,17 +19,10 @@ public class HistoricoSolicitacao {
     @Autowired
     HistoricoSolicitacaoRepository historicoSolicitacaoRepository;
 
-    @PostPersist
-    @PostUpdate
-    @PreRemove
     @Transactional
     public void mudarSolicitacao(SolicitarEstagio solicitarEstagio){
         Historico log = new Historico(LocalDateTime.now(),solicitarEstagio.getEtapa(),solicitarEstagio.getStatus(),solicitarEstagio);
-        System.out.println("DEBUG:  PASSOU NO HISTORICO SOLICITACAO" );
-
         historicoSolicitacaoRepository.save(log);
       
     }
-
-    
 }
