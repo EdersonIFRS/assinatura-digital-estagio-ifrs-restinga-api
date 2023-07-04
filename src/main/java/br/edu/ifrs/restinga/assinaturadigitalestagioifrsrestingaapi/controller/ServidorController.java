@@ -43,7 +43,6 @@ public class ServidorController extends BaseController {
             return servidorImplementacao.salvar(dadosCadastroServidor, null, uriBuilder);
         }
         if (servidorRepository.existsServidorByCurso_IdEquals(curso.get().getId()) && dadosCadastroServidor.curso() != 15) {
-            System.out.println("Passou aqui");
             return TratadorDeErros.tratarErro409("curso");
         }
         return servidorImplementacao.salvar(dadosCadastroServidor, curso.get(), uriBuilder);

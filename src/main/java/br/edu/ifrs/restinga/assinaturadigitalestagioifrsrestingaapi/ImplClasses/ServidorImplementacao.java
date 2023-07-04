@@ -31,7 +31,7 @@ public class ServidorImplementacao extends BaseController {
 	@PersistenceContext	
 	EntityManager manager;
 
-	String[] cargo = {"Coordenador","Setor de Estágio"};
+	String[] cargo = {"Coordenador","Setor de Estágio","Diretor"};
 
 
 
@@ -48,6 +48,8 @@ public class ServidorImplementacao extends BaseController {
 			role = roleRepository.findById(2L);
 		}else if(dadosCadastroServidor.cargo().equals(cargo[1].toString())) {
 			role = roleRepository.findById(3L);
+		} else if (dadosCadastroServidor.cargo().equalsIgnoreCase(cargo[2].toString())) {
+			role = roleRepository.findById(4L);
 		}
 
 
