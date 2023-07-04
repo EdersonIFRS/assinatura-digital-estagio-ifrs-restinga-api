@@ -8,6 +8,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity(name = "SolicitarEstagio")
 @Data
 @NoArgsConstructor
@@ -20,13 +23,19 @@ public class SolicitarEstagio {
     private String tipo;
 
     @OneToMany(mappedBy = "solicitarEstagio", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonIgnore
     private List<Documento> documento = new ArrayList<>();
+
     @OneToOne
     private Aluno aluno;
 
     private String status;
 
     @OneToOne Servidor servidor;
+
+    @OneToMany(mappedBy = "solicitarEstagio", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Historico> historico = new ArrayList<>();
 
     @Column(columnDefinition = "DATETIME")
     private LocalDateTime dataSolicitacao;

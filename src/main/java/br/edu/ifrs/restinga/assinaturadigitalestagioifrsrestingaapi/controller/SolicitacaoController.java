@@ -1,6 +1,8 @@
 package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.HistoricoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.FileImp;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.HistoricoSolicitacaoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.ServidorRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtualizacaoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
@@ -8,6 +10,7 @@ import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosLis
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoServidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Aluno;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Documento;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Historico;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.Servidor;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.model.SolicitarEstagio;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +29,12 @@ public class SolicitacaoController extends BaseController{
     @Autowired
     FileImp fileImp;
 
+    @Autowired
+    private HistoricoSolicitacao historicoSolicitacao;
+
+    @Autowired 
+    private HistoricoSolicitacaoRepository historicoSolicitacaoRepository;
+
     @PostMapping(value = "/cadastrarSolicitacao")
     @Transactional
     public ResponseEntity cadastrarSolicitacao(@RequestPart("dados") DadosCadastroSolicitacao dados,
@@ -40,10 +49,10 @@ public class SolicitacaoController extends BaseController{
         System.out.println("Dados slt: " + dados.status());
         Optional<Aluno> aluno = alunoRepository.findById(dados.alunoId());
 
-        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "em andamento", "1", "");
+        SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em Andamento", "2", "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
-
         solicitacaoRepository.save(solicitarEstagio);
+        historicoSolicitacao.mudarSolicitacao(solicitarEstagio);
         return ResponseEntity.ok().build();
     }
     else{
@@ -59,6 +68,7 @@ public class SolicitacaoController extends BaseController{
     }
 
     @GetMapping("/dadosSolicitacaoAluno")
+    
     public ResponseEntity<List<DadosListagemSolicitacaoAluno>> obterSolicitacoes(@RequestHeader("Authorization") String token) {
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         Aluno aluno = alunoRepository.findByUsuarioSistemaEmail(email);
@@ -100,6 +110,16 @@ public class SolicitacaoController extends BaseController{
 
     }
         
+    //teste
+  @GetMapping("/dadosSolicitacaoTeste")
+public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
+    List<SolicitarEstagio> solicitacoes = solicitacaoRepository.findAll();
+    if (solicitacoes.isEmpty()) {
+        return ResponseEntity.notFound().build(); // Se não encontrar, retorna 404 Not Found
+    } else {
+        return ResponseEntity.ok(solicitacoes); // Se encontrar, retorna 200 OK com a lista de entidades
+    }
+}
 
 
     @GetMapping("/listarSolicitacoesPorEmailServidor")
@@ -112,6 +132,7 @@ public class SolicitacaoController extends BaseController{
         }else {
             solicitacoes = solicitacaoRepository.findAll();
         }
+
         List<DadosListagemSolicitacaoServidor> dadosSolicitacoes = solicitacoes.stream().map(DadosListagemSolicitacaoServidor::new).toList();
         
         return ResponseEntity.ok(dadosSolicitacoes);
@@ -143,53 +164,82 @@ public class SolicitacaoController extends BaseController{
                                                        @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
                                                        @RequestParam("file") List<MultipartFile> files,
                                                        @RequestHeader("Authorization") String token) {
-        String email = tokenService.getSubject(token.replace("Bearer ", ""));
-        Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
-        Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
-
-        if(servidor.getRole().getId().equals(2)){
-           System.out.println("esta chagando os dados");
-        }
-        if (solicitacaoOptional.isPresent()) {
-            SolicitarEstagio solicitacao = solicitacaoOptional.get();
-            if (dados.status() != null) {
-                solicitacao.setStatus(dados.status());
-            }
-            solicitacao.setEtapa("3");
-            if (!files.isEmpty()) {
-                fileImp.SaveDocBlob(files, solicitacao);
-            }
-            solicitacaoRepository.save(solicitacao);
-            return ResponseEntity.ok().build();
-        }
-            return ResponseEntity.notFound().build();
-    }
-
-
-    @PutMapping("/deferirSolicitacaoSetorEstagio/{id}")
-    @Transactional
-    public ResponseEntity deferirSolicitacaoSetorEstagio(@PathVariable("id") Long id,
-                                             @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
-                                             @RequestHeader("Authorization") String token){
 
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+        System.out.println("AQUI ESTA A ROLE "+servidor.getRole());
 
-        if(servidor.getRole().getId().equals(3)){
-            System.out.println("esta chagando os dados");
-        }
-        if (solicitacaoOptional.isPresent()) {
-            SolicitarEstagio solicitacao = solicitacaoOptional.get();
-            if (dados.status() != null) {
-                solicitacao.setStatus(dados.status());
+         if (servidor.getRole().getId() == 3) {
+            System.out.println("Está chegando os dados para a role 3 setor estagio");
+
+            if (solicitacaoOptional.isPresent()) {
+                SolicitarEstagio solicitacao = solicitacaoOptional.get();
+                
+                solicitacao.setEtapa("3");
+                solicitacaoRepository.save(solicitacao);
+                return ResponseEntity.ok().build();
             }
-            solicitacao.setEtapa("3");
-            solicitacaoRepository.save(solicitacao);
+        }
+        
+        else if (servidor.getRole().getId() == 2) {
+            System.out.println("Está chegando os dados para a role 2 servidor");
+            if (solicitacaoOptional.isPresent()) {
+                SolicitarEstagio solicitacao = solicitacaoOptional.get();
+                //ARRUMAR SEPARACAO LISTA DOCUMENTOS ASSINADOS.
+                fileImp.SaveDocBlob(files,solicitacao);
+                solicitacao.setEtapa("4");
+                solicitacaoRepository.save(solicitacao);
+                return ResponseEntity.ok().build();
+            }
+        }
+        
+        else if (servidor.getRole().getId() == 4) {
+            System.out.println("Está chegando os dados para a role 4 diretor");
+
+            if (solicitacaoOptional.isPresent()) {
+                SolicitarEstagio solicitacao = solicitacaoOptional.get();
+                //ARRUMAR SEPARACAO LISTA DOCUMENTOS ASSINADOS.
+                fileImp.SaveDocBlob(files,solicitacao);
+                solicitacao.setEtapa("5");
+                solicitacaoRepository.save(solicitacao);
+                return ResponseEntity.ok().build();
+            }
+
+        }else {
+            System.out.println("Está chegando os dados para outras roles");
             return ResponseEntity.ok().build();
         }
+
         return ResponseEntity.notFound().build();
     }
+
+
+    // @PutMapping("/deferirSolicitacaoSetorEstagio/{id}")
+    // @Transactional
+    // public ResponseEntity deferirSolicitacaoSetorEstagio(@PathVariable("id") Long id,
+    //                                          @RequestPart("dados") DadosAtualizacaoSolicitacao dados,
+    //                                          @RequestHeader("Authorization") String token){
+
+    //     String email = tokenService.getSubject(token.replace("Bearer ", ""));
+    //     Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+    //     Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
+
+    //     if(servidor.getRole().getId().equals(3)){
+    //         System.out.println("esta chagando os dados");
+    //     }
+    //     if (solicitacaoOptional.isPresent()) {
+    //         SolicitarEstagio solicitacao = solicitacaoOptional.get();
+    //         if (dados.status() != null) {
+    //             solicitacao.setStatus(dados.status());
+    //         }
+    //         solicitacao.setEtapa("3");
+    //         solicitacaoRepository.save(solicitacao);
+    //         historicoSolicitacao.mudarSolicitacao(solicitacao);
+    //         return ResponseEntity.ok().build();
+    //     }
+    //     return ResponseEntity.notFound().build();
+    // }
 
 
     @PostMapping("/indeferirSolicitacao")
@@ -222,6 +272,7 @@ public class SolicitacaoController extends BaseController{
             }
 
             solicitacaoRepository.save(solicitacao);
+            historicoSolicitacao.mudarSolicitacao(solicitacao);
             return ResponseEntity.ok().build();
         }
             return ResponseEntity.notFound().build();
