@@ -2,6 +2,7 @@ package br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.controller;
 
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.HistoricoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.ImplClasses.FileImp;
+import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.domain.repository.HistoricoSolicitacaoRepository;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosAtualizacaoSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosCadastroSolicitacao;
 import br.edu.ifrs.restinga.assinaturadigitalestagioifrsrestingaapi.dto.DadosListagemSolicitacaoAluno;
@@ -278,17 +279,17 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
             solicitacao.setEtapa("5");
 
 
-            solicitacao.setStatus("INDEFERIDO");
-            solicitacao.setStatusEtapaDiretor("INDEFERIDO");
-            solicitacao.setStatusEtapaCoordenador("INDEFERIDO");
-            solicitacao.setStatusEtapaDiretor("INDEFERIDO");
+            solicitacao.setStatus("Indeferido");
+            solicitacao.setStatusEtapaDiretor(dados.statusEtapaDiretor());
+            solicitacao.setStatusEtapaCoordenador(dados.statusEtapaCoordenador());
+            solicitacao.setStatusEtapaDiretor(dados.statusEtapaDiretor());
 
             if (dados.observacao() != null) {
                 solicitacao.setObservacao(dados.observacao());
             }
 
             solicitacaoRepository.save(solicitacao);
-            historicoSolicitacao.mudarSolicitacao(solicitacao);
+            //historicoSolicitacao.mudarSolicitacao(solicitacao);
             return ResponseEntity.ok().build();
         }
 
