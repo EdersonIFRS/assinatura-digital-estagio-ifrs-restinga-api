@@ -29,9 +29,6 @@ public class SolicitacaoController extends BaseController{
     @Autowired
     private HistoricoSolicitacao historicoSolicitacao;
 
-    @Autowired 
-    private HistoricoSolicitacaoRepository historicoSolicitacaoRepository;
-
     @PostMapping(value = "/cadastrarSolicitacao")
     @Transactional
     public ResponseEntity cadastrarSolicitacao(@RequestPart("dados") DadosCadastroSolicitacao dados,
@@ -66,7 +63,6 @@ public class SolicitacaoController extends BaseController{
     }
 
     @GetMapping("/dadosSolicitacaoAluno")
-    
     public ResponseEntity<List<DadosListagemSolicitacaoAluno>> obterSolicitacoes(@RequestHeader("Authorization") String token) {
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         Aluno aluno = alunoRepository.findByUsuarioSistemaEmail(email);
@@ -141,14 +137,16 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
     }
 
     @GetMapping("/alunoSolicitacao/{id}")
-    public ResponseEntity<Aluno> getAlunoSolicitacao(@PathVariable("id") Long id) {
+    public ResponseEntity<DadosListagemSolicitacaoAluno> getAlunoSolicitacao(@PathVariable("id") Long id) {
         Optional<SolicitarEstagio> solicitacao = solicitacaoRepository.findById(id);
         if (solicitacao.isPresent()) {
-            return ResponseEntity.ok(solicitacao.get().getAluno());
+            DadosListagemSolicitacaoAluno dadosSolicitacao = new DadosListagemSolicitacaoAluno(solicitacao.get());
+            return ResponseEntity.ok(dadosSolicitacao);
         } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     @GetMapping("/solicitacao/{id}")
     public ResponseEntity<DadosAtualizacaoSolicitacao> getSolicitacaoById(@PathVariable("id") Long id) {
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
