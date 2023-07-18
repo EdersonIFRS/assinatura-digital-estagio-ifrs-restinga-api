@@ -20,8 +20,8 @@ public class HistoricoSolicitacao {
     HistoricoSolicitacaoRepository historicoSolicitacaoRepository;
 
     @Transactional
-    public void mudarSolicitacao(SolicitarEstagio solicitarEstagio){
-        Historico log = new Historico(LocalDateTime.now(),solicitarEstagio.getEtapa(),solicitarEstagio.getStatus(),solicitarEstagio);
+    public void mudarSolicitacao(SolicitarEstagio solicitarEstagio, String situacao){
+        Historico log = new Historico(LocalDateTime.now(),solicitarEstagio.getEtapa(),situacao,solicitarEstagio);
         historicoSolicitacaoRepository.save(log);
       
     }

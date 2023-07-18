@@ -47,7 +47,7 @@ public class SolicitacaoController extends BaseController{
         SolicitarEstagio solicitarEstagio = new SolicitarEstagio(aluno.get(), servidor.get(),dados.tipo(), dados.titulo(), dados.conteudo(), dados.observacao(), "Em Andamento", "2", "", "", "Em Andamento", "");
         fileImp.SaveDocBlob(file,solicitarEstagio);
         solicitacaoRepository.save(solicitarEstagio);
-        historicoSolicitacao.mudarSolicitacao(solicitarEstagio);
+        historicoSolicitacao.mudarSolicitacao(solicitarEstagio, "Enviado");
         return ResponseEntity.ok().build();
     }
     else{
@@ -196,6 +196,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
         Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
         Optional<SolicitarEstagio> solicitacaoOptional = solicitacaoRepository.findById(id);
         System.out.println("AQUI ESTA A ROLE "+servidor.getRole());
+        String deferido = "Deferido";
 
         if (!solicitacaoOptional.isPresent()) {
             return ResponseEntity.notFound().build();
@@ -230,21 +231,21 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
             solicitacao.setStatusSetorEstagio(dados.statusEtapaSetorEstagio()); // status setor estagio
             solicitacao.setEtapa("3");
             solicitacao.setStatusEtapaCoordenador("Em Andamento");
-            historicoSolicitacao.mudarSolicitacao(solicitacao);
+            historicoSolicitacao.mudarSolicitacao(solicitacao, deferido);
         }
 
         if (servidor.getRole().getId() == 2) {
             solicitacao.setStatusEtapaCoordenador(dados.statusEtapaCoordenador()); // status coordenador
             solicitacao.setEtapa("4");
             solicitacao.setStatusEtapaDiretor("Em Andamento");
-            historicoSolicitacao.mudarSolicitacao(solicitacao);
+            historicoSolicitacao.mudarSolicitacao(solicitacao, deferido);
         }
 
         if (servidor.getRole().getId() == 4) {
             solicitacao.setEtapa("5"); // Diretor
             solicitacao.setStatusEtapaDiretor(dados.statusEtapaDiretor()); // definir status
             solicitacao.setStatus(dados.status()); // Definir o status como "DEFERIDO"
-            historicoSolicitacao.mudarSolicitacao(solicitacao);
+            historicoSolicitacao.mudarSolicitacao(solicitacao, deferido);
         }
 
 
@@ -269,6 +270,7 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
 
         String email = tokenService.getSubject(token.replace("Bearer ", ""));
         Servidor servidor = servidorRepository.findByUsuarioSistemaEmail(email);
+        String indeferido = "Indeferido";
 
         // Verificar se o servidor tem permissão para indeferir solicitações
         if (!(servidor.getRole().getId() == 2 || servidor.getRole().getId() == 3 || servidor.getRole().getId() == 4)) {
@@ -289,21 +291,21 @@ public ResponseEntity<List<SolicitarEstagio>> dadoSolicitacaoTeste() {
                 // status setor estagio
                 solicitacao.setStatus("Indeferido");
                 solicitacao.setStatusSetorEstagio("Indeferido");
-                historicoSolicitacao.mudarSolicitacao(solicitacao);
+                historicoSolicitacao.mudarSolicitacao(solicitacao, indeferido);
             }
 
             if (servidor.getRole().getId() == 2) {
                 // status coordenador
                 solicitacao.setStatus("Indeferido");
                 solicitacao.setStatusEtapaCoordenador("Indeferido");
-                historicoSolicitacao.mudarSolicitacao(solicitacao);
+                historicoSolicitacao.mudarSolicitacao(solicitacao, indeferido);
             }
 
             if (servidor.getRole().getId() == 4) {
                 // Diretor
                 solicitacao.setStatus("Indeferido");
                 solicitacao.setStatusEtapaDiretor("Indeferido");
-                historicoSolicitacao.mudarSolicitacao(solicitacao);
+                historicoSolicitacao.mudarSolicitacao(solicitacao, indeferido);
             }
 
             if (dados.observacao() != null) {
